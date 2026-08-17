@@ -98,35 +98,31 @@ function PostCreatorPage() {
     setCopied(index);
     window.setTimeout(() => setCopied(null), 1600);
   }
+  // 发送页面高度给父窗口
   useEffect(() => {
     document.documentElement.style.overflowY = "visible";
     document.body.style.overflowY = "visible";
 
-    function sendRealHeight() {
-      const realHeight = document.documentElement.scrollHeight;
-      // 第二个参数用"*"，允许发给任意父域名，生产环境可以换回真实域名
+    function sendHeight() {
+      const height = document.documentElement.scrollHeight;
       window.parent.postMessage(
         {
-          type: "iframe-height",
-          height: realHeight,
+          type: "setIframeHeight",
+          height: height,
         },
         "*",
       );
     }
 
-    sendRealHeight();
-    window.addEventListener("resize", sendRealHeight);
-
-    const observer = new MutationObserver(sendRealHeight);
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
-    });
+    // 页面加载、窗口resize、dom变化都上报高度
+    window.addEventListener("load", sendHeight);
+    window.addEventListener("resize", sendHeight);
+    const observer = new ResizeObserver(sendHeight);
+    observer.observe(document.body);
 
     return () => {
-      window.removeEventListener("resize", sendRealHeight);
+      window.removeEventListener("load", sendHeight);
+      window.removeEventListener("resize", sendHeight);
       observer.disconnect();
     };
   }, []);
