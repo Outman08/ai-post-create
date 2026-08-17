@@ -59,6 +59,74 @@ function PostCreatorPage() {
 
   const fetchPosts = useCallback(
     async (currentTopic: string, currentPlatform: Platform, currentTone: Tone) => {
+      // 前端限流：每小时最多10次
+      const RATE_LIMIT = 10;
+      const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1小时
+      const RATE_KEYS = [
+        "post_generator_rate_limit",
+        "post_generator_rate_limit_backup",
+        "_gl_pg_rl",
+      ];
+
+      const now = Date.now();
+      let rateData = { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
+
+      // 从多个存储位置读取，取最大的计数
+      let maxCount = 0;
+      let latestResetTime = now + RATE_LIMIT_WINDOW;
+
+      for (const key of RATE_KEYS) {
+        try {
+          const storedLocal = localStorage.getItem(key);
+          if (storedLocal) {
+            const data = JSON.parse(storedLocal);
+            if (now <= data.resetTime && data.count > maxCount) {
+              maxCount = data.count;
+              latestResetTime = data.resetTime;
+            }
+          }
+
+          const storedSession = sessionStorage.getItem(key);
+          if (storedSession) {
+            const data = JSON.parse(storedSession);
+            if (now <= data.resetTime && data.count > maxCount) {
+              maxCount = data.count;
+              latestResetTime = data.resetTime;
+            }
+          }
+        } catch (e) {
+          // 读取失败，忽略
+        }
+      }
+
+      if (maxCount > 0) {
+        rateData = { count: maxCount, resetTime: latestResetTime };
+      }
+
+      if (rateData.count >= RATE_LIMIT) {
+        const remainingMinutes = Math.ceil((rateData.resetTime - now) / 60000);
+        alert(`已达到使用限制！每小时最多生成${RATE_LIMIT}次，请${remainingMinutes}分钟后再试。`);
+        return;
+      }
+
+      // 更新计数到多个存储位置
+      rateData.count += 1;
+      for (const key of RATE_KEYS) {
+        try {
+          localStorage.setItem(key, JSON.stringify(rateData));
+          sessionStorage.setItem(key, JSON.stringify(rateData));
+        } catch (e) {
+          // 写入失败，忽略
+        }
+      }
+
+      // 还可以尝试写入 cookie（1小时过期）
+      try {
+        document.cookie = `${RATE_KEYS[0]}=${encodeURIComponent(JSON.stringify(rateData))}; max-age=${RATE_LIMIT_WINDOW / 1000}; path=/`;
+      } catch (e) {
+        // cookie 写入失败，忽略
+      }
+
       setLoading(true);
       try {
         const generatedPosts = await generatePosts(currentTopic, currentPlatform, currentTone);
@@ -871,6 +939,91 @@ function PostCreatorPage() {
             </Accordion>
           </div>
         </section>
+
+        {/* FAQ Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: [
+                {
+                  "@type": "Question",
+                  name: "Is the post creator free?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Yes. Generating drafts is free and needs no account. You only sign up when you want to publish from GeeLark cloud phones.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Which platforms are supported?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Drafts are tuned for TikTok, Instagram, X, LinkedIn, Facebook and all other social platforms.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Will the posts sound generic?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "The more specific your prompt — product, audience, angle — the sharper the drafts. Treat them as a strong first pass and add your own voice.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "How does GeeLark keep accounts safe?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Every profile runs on its own cloud Android phone with an isolated device fingerprint, so activity never overlaps between accounts.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Do I need to sign up to use the post creator?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "No. You can generate as many drafts as you like without creating an account. Signup is only needed when you want to publish from GeeLark cloud phones.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Can I use the generated posts for commercial accounts?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Yes. The drafts are yours to use, edit, and publish however you want. We recommend reviewing them for brand voice and accuracy before posting.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "What makes GeeLark different from other social media tools?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Most tools help you write or schedule. GeeLark also provides a real cloud Android phone for each account, so platforms see each profile as a separate, legitimate user.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "How do I publish posts from a cloud phone?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "After you create a GeeLark account, you can spin up cloud Android phones, install the apps you need, and log into each account on its own device. Then you post just like you would on a normal phone.",
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Is there a limit on how many posts I can generate?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "There is no hard limit in the free creator. Generate, refine, and copy as many drafts as you need.",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
 
         {/* More tools */}
         <section id="tools" className="">
