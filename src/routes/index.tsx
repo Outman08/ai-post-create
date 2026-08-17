@@ -99,6 +99,50 @@ function PostCreatorPage() {
     window.setTimeout(() => setCopied(null), 1600);
   }
 
+  // 发送页面高度给父窗口
+  useEffect(() => {
+    const sendHeight = () => {
+      // 获取整个页面真实完整高度
+      const pageHeight = document.documentElement.scrollHeight;
+      window.parent.postMessage(
+        {
+          type: "iframe-height",
+          height: pageHeight,
+        },
+        // WordPress主站域名
+        "https://www.geelark.com",
+      );
+    };
+
+    // 首次加载发送
+    sendHeight();
+
+    // 监听页面DOM变化（AI生成内容出来之后高度会变大）
+    const resizeObserver = new ResizeObserver(sendHeight);
+    resizeObserver.observe(document.documentElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // 让链接跳转发生在父级窗口
+  useEffect(() => {
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest("a");
+      if (link && link.href && !link.href.startsWith("#")) {
+        e.preventDefault();
+        window.parent.location.href = link.href;
+      }
+    };
+
+    document.addEventListener("click", handleLinkClick);
+    return () => {
+      document.removeEventListener("click", handleLinkClick);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-foreground">
       <main>
