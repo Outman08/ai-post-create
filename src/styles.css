@@ -159,7 +159,13 @@
 
   html,
   body {
-    overflow-y: visible !important;
+    scrollbar‑gutter: stable; /*浏览器原生：预留滚动条槽；内容不够高时，不会出现可空滚动；内容溢出才出现滚动条*/
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
   }
 
   body {
