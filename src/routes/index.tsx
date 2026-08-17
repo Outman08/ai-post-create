@@ -101,12 +101,15 @@ function PostCreatorPage() {
 
   // 发送页面高度给父窗口
   useEffect(() => {
-    // 关键：关闭子页面内部滚动，避免双重滚动条
     document.documentElement.style.overflowY = "visible";
     document.body.style.overflowY = "visible";
 
+    const rootEl = document.getElementById("root");
+    if (!rootEl) return;
+
     const sendHeight = () => {
-      const pageHeight = document.documentElement.scrollHeight;
+      const pageHeight = rootEl.scrollHeight;
+      console.log("Sending iframe height:", pageHeight);
       window.parent.postMessage(
         {
           type: "iframe-height",
@@ -116,34 +119,34 @@ function PostCreatorPage() {
       );
     };
 
-    sendHeight();
-    const resizeObserver = new ResizeObserver(sendHeight);
-    resizeObserver.observe(document.documentElement);
+    // ✅替换掉setTimeout，双层requestAnimationFrame，布局完成立刻执行，无固定延时
+    const triggerSend = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          sendHeight();
+        });
+      });
+    };
+
+    // 页面初始化渲染完成上报
+    triggerSend();
+
+    // ResizeObserver监听root，内容变化立刻上报（AI生成结果、展开内容都会触发）
+    const resizeObserver = new ResizeObserver(() => {
+      triggerSend();
+    });
+    resizeObserver.observe(rootEl);
+
+    window.addEventListener("resize", triggerSend);
 
     return () => {
       resizeObserver.disconnect();
-    };
-  }, []);
-
-  // 让链接跳转发生在父级窗口
-  useEffect(() => {
-    const handleLinkClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const link = target.closest("a");
-      if (link && link.href && !link.href.startsWith("#")) {
-        e.preventDefault();
-        window.parent.location.href = link.href;
-      }
-    };
-
-    document.addEventListener("click", handleLinkClick);
-    return () => {
-      document.removeEventListener("click", handleLinkClick);
+      window.removeEventListener("resize", triggerSend);
     };
   }, []);
 
   return (
-    <div className="bg-white text-foreground" style={{ overflow: "hidden" }}>
+    <div className="bg-white text-foreground">
       <main>
         {/* Hero + creator */}
         <section id="creator" className="">
