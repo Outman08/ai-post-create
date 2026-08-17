@@ -104,44 +104,35 @@ function PostCreatorPage() {
     document.documentElement.style.overflowY = "visible";
     document.body.style.overflowY = "visible";
 
-    const rootEl = document.getElementById("root");
-    if (!rootEl) return;
-
-    const sendHeight = () => {
-      const pageHeight = rootEl.scrollHeight;
-      console.log("Sending iframe height:", pageHeight);
+    function sendRealHeight() {
+      const realHeight = document.documentElement.scrollHeight;
       window.parent.postMessage(
         {
           type: "iframe-height",
-          height: pageHeight,
+          height: realHeight,
         },
         "https://www.geelark.com",
       );
-    };
+    }
 
-    // ✅替换掉setTimeout，双层requestAnimationFrame，布局完成立刻执行，无固定延时
-    const triggerSend = () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          sendHeight();
-        });
-      });
-    };
+    // 初始化发送
+    sendRealHeight();
 
-    // 页面初始化渲染完成上报
-    triggerSend();
+    // 监听窗口大小变化
+    window.addEventListener("resize", sendRealHeight);
 
-    // ResizeObserver监听root，内容变化立刻上报（AI生成结果、展开内容都会触发）
-    const resizeObserver = new ResizeObserver(() => {
-      triggerSend();
+    // MutationObserver 监听 DOM 变化
+    const observer = new MutationObserver(sendRealHeight);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true,
     });
-    resizeObserver.observe(rootEl);
-
-    window.addEventListener("resize", triggerSend);
 
     return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", triggerSend);
+      window.removeEventListener("resize", sendRealHeight);
+      observer.disconnect();
     };
   }, []);
 
@@ -286,8 +277,10 @@ function PostCreatorPage() {
                             <p className="text-xs text-muted-foreground">{platform.handleLabel}</p>
                           </div>
                         </div>
-                        <p className="mt-4 whitespace-pre-line text-sm leading-relaxed">{post}</p>
-                        <div className="mt-5 flex items-center gap-5 border-t border-border pt-4 text-muted-foreground">
+                        <p className="mt-4 flex-1 whitespace-pre-line text-sm leading-relaxed">
+                          {post}
+                        </p>
+                        <div className="mt-auto flex items-center gap-5 border-t border-border pt-4 text-muted-foreground">
                           <span className="flex items-center gap-1.5 text-xs">
                             <Heart className="size-4" /> 128
                           </span>

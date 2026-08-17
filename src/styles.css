@@ -157,7 +157,8 @@
     border-color: var(--color-border);
   }
 
-  html, body {
+  html,
+  body {
     overflow-y: visible !important;
   }
 
