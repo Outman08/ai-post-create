@@ -157,6 +157,10 @@
     border-color: var(--color-border);
   }
 
+  html, body {
+    overflow-y: visible !important;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);

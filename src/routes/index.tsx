@@ -101,23 +101,22 @@ function PostCreatorPage() {
 
   // 发送页面高度给父窗口
   useEffect(() => {
+    // 关键：关闭子页面内部滚动，避免双重滚动条
+    document.documentElement.style.overflowY = "visible";
+    document.body.style.overflowY = "visible";
+
     const sendHeight = () => {
-      // 获取整个页面真实完整高度
       const pageHeight = document.documentElement.scrollHeight;
       window.parent.postMessage(
         {
           type: "iframe-height",
           height: pageHeight,
         },
-        // WordPress主站域名
         "https://www.geelark.com",
       );
     };
 
-    // 首次加载发送
     sendHeight();
-
-    // 监听页面DOM变化（AI生成内容出来之后高度会变大）
     const resizeObserver = new ResizeObserver(sendHeight);
     resizeObserver.observe(document.documentElement);
 
