@@ -96,27 +96,34 @@ export async function generatePosts(
   count = 3,
 ): Promise<string[]> {
   try {
-    const apiKey = import.meta.env["VITE_DEEPSEEK_API_KEY"];
-    if (!apiKey) {
-      console.log("No API key found, using template posts");
-      return generateTemplatePosts(topic, platform, tone, count);
-    }
+    // 判断是否在本地开发（localhost）
+    const isLocalhost =
+      window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
-    console.log("Calling DeepSeek API...");
+    if (isLocalhost) {
+      console.log("📍 本地开发：直接调用 DeepSeek API");
 
-    // 使用 DeepSeek API 直接调用
-    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [
-          {
-            role: "system",
-            content: `You are a professional social media post generator. Generate ${count} high-quality social media posts. 
+      const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
+      if (!apiKey) {
+        console.log("No API key found, using template posts");
+        return generateTemplatePosts(topic, platform, tone, count);
+      }
+
+      console.log("Calling DeepSeek API...");
+
+      // 使用 DeepSeek API 直接调用
+      const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            {
+              role: "system",
+              content: `You are a professional social media post generator. Generate ${count} high-quality social media posts.
 
 CRITICAL RULES:
 1. Each post must be suitable for ${platform.name}
@@ -127,59 +134,83 @@ CRITICAL RULES:
 6. Do not use JSON, no arrays, no code blocks
 7. Keep within platform character limits (${platform.limit} max)
 8. No extra text before or after the posts`,
-          },
-          {
-            role: "user",
-            content: `Generate ${count} ${tone} social media posts about "${topic}" for ${platform.name}. Separate each post with exactly "---POST_SEPARATOR---".`,
-          },
-        ],
-        temperature: 0.7,
-      }),
-    });
+            },
+            {
+              role: "user",
+              content: `Generate ${count} ${tone} social media posts about "${topic}" for ${platform.name}. Separate each post with exactly "---POST_SEPARATOR---".`,
+            },
+          ],
+          temperature: 0.7,
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
 
-    const data = await response.json();
-    const aiContent = data.choices[0]?.message?.content || "";
+      const data = await response.json();
+      const aiContent = data.choices[0]?.message?.content || "";
 
-    console.log("AI Response received:", aiContent);
+      console.log("AI Response received:", aiContent);
 
-    // 使用分隔符分割帖子
-    let posts = aiContent
-      .split("---POST_SEPARATOR---")
-      .map((p: string) => p.trim())
-      .filter((p: string) => p.length > 0)
-      .slice(0, count);
-
-    console.log("Parsed posts:", posts);
-
-    // 如果分割失败，尝试用双换行分割
-    if (posts.length === 0) {
-      posts = aiContent
-        .split("\n\n")
+      // 使用分隔符分割帖子
+      let posts = aiContent
+        .split("---POST_SEPARATOR---")
         .map((p: string) => p.trim())
         .filter((p: string) => p.length > 0)
         .slice(0, count);
-    }
 
-    // 如果还是没有帖子，使用模板
-    if (posts.length === 0) {
-      console.log("No valid posts from AI, using templates");
-      return generateTemplatePosts(topic, platform, tone, count);
-    }
+      console.log("Parsed posts:", posts);
 
-    // 如果帖子不够，用模板补充
-    while (posts.length < count) {
-      const templatePosts = generateTemplatePosts(topic, platform, tone, count - posts.length);
-      posts = posts.concat(templatePosts);
-    }
+      // 如果分割失败，尝试用双换行分割
+      if (posts.length === 0) {
+        posts = aiContent
+          .split("\n\n")
+          .map((p: string) => p.trim())
+          .filter((p: string) => p.length > 0)
+          .slice(0, count);
+      }
 
-    return posts.slice(0, count);
+      // 如果还是没有帖子，使用模板
+      if (posts.length === 0) {
+        console.log("No valid posts from AI, using templates");
+        return generateTemplatePosts(topic, platform, tone, count);
+      }
+
+      // 如果帖子不够，用模板补充
+      while (posts.length < count) {
+        const templatePosts = generateTemplatePosts(topic, platform, tone, count - posts.length);
+        posts = posts.concat(templatePosts);
+      }
+
+      return posts.slice(0, count);
+    } else {
+      console.log("🚀 Vercel 环境：调用 Edge Function");
+
+      // Vercel 部署：调用 Edge Function
+      const response = await fetch("/api/generate-posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic,
+          platform: platform.name,
+          tone,
+          count,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("API 响应收到：", data);
+
+      return data.posts || generateTemplatePosts(topic, platform, tone, count);
+    }
   } catch (error) {
-    console.error("Error generating posts from API:", error);
-    // Fallback to template generation
+    console.error("生成帖子时出错：", error);
+    // 错误时使用模板
     return generateTemplatePosts(topic, platform, tone, count);
   }
 }
