@@ -271,7 +271,7 @@ function PostCreatorPage() {
                         <p className="mt-4 flex-1 whitespace-pre-line text-sm leading-relaxed">
                           {post}
                         </p>
-                        <div className="mt-auto flex items-center gap-5 border-t border-border pt-4 text-muted-foreground">
+                        <div className="mt-auto flex items-center gap-5 border-t border-border pt-3 pb-1 text-muted-foreground">
                           <span className="flex items-center gap-1.5 text-xs">
                             <Heart className="size-4" /> 128
                           </span>
