@@ -54,7 +54,6 @@ function pick<T>(arr: T[], seed: number): T {
   return arr[Math.abs(seed) % arr.length] as T;
 }
 
-
 function hash(input: string): number {
   let h = 0;
   for (let i = 0; i < input.length; i++) h = (h * 31 + input.charCodeAt(i)) | 0;
@@ -66,21 +65,121 @@ function clean(topic: string) {
   return t.charAt(0).toLowerCase() + t.slice(1);
 }
 
-export function generatePosts(topic: string, platform: Platform, tone: Tone, count = 3): string[] {
+function generateTemplatePosts(
+  topic: string,
+  platform: Platform,
+  tone: Tone,
+  count: number,
+): string[] {
   const base = clean(topic) || "running multiple social accounts without getting flagged";
-  const seed = hash(`${base}|${platform.id}|${tone}`);
   const tags = HASHTAGS[platform.id].join(" ");
+  const bodies: string[] = [];
 
-  const bodies = [
-    `${pick(OPENERS[tone], seed)} ${base}.\n\nGeeLark spins up real cloud Android phones, each with its own device fingerprint, so every account looks and behaves like a separate person. No extra hardware, no juggling SIMs.\n\n${pick(CLOSERS[tone], seed)}`,
-    `${pick(OPENERS[tone], seed + 7)} ${base}.\n\n• One cloud phone per account\n• Unique fingerprint + proxy on every profile\n• Schedule posts and warm-ups while you sleep\n• Scale from 3 profiles to 300 in a click\n\n${pick(CLOSERS[tone], seed + 3)}`,
-    `We asked our team about ${base} — the answer was boring but effective: give every account its own device.\n\nThat's exactly what GeeLark's cloud phones do, and it's why teams stop losing accounts on week two.\n\n${pick(CLOSERS[tone], seed + 11)}`,
-  ];
+  for (let i = 0; i < count; i++) {
+    const seed = hash(`${base}|${platform.id}|${tone}|${i}`);
+    const post = `${pick(OPENERS[tone], seed)} ${base}.\n\nGeeLark spins up real cloud Android phones, each with its own device fingerprint, so every account looks and behaves like a separate person. No extra hardware, no juggling SIMs.\n\n${pick(CLOSERS[tone], seed)}`;
+    const withTags = platform.id === "linkedin" ? `${post}\n\n${tags}` : `${post}\n\n${tags}`;
+    bodies.push(
+      withTags.length > platform.limit
+        ? `${withTags.slice(0, Math.max(0, platform.limit - 1)).trimEnd()}…`
+        : withTags,
+    );
+  }
 
-  return bodies.slice(0, count).map((body) => {
-    const withTags = platform.id === "linkedin" ? `${body}\n\n${tags}` : `${body}\n\n${tags}`;
-    return withTags.length > platform.limit
-      ? `${withTags.slice(0, Math.max(0, platform.limit - 1)).trimEnd()}…`
-      : withTags;
-  });
+  return bodies;
+}
+
+export async function generatePosts(
+  topic: string,
+  platform: Platform,
+  tone: Tone,
+  count = 3,
+): Promise<string[]> {
+  try {
+    const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
+    if (!apiKey) {
+      console.log("No API key found, using template posts");
+      return generateTemplatePosts(topic, platform, tone, count);
+    }
+
+    console.log("Calling DeepSeek API...");
+
+    // 使用 DeepSeek API 直接调用
+    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          {
+            role: "system",
+            content: `You are a professional social media post generator. Generate ${count} high-quality social media posts. 
+
+CRITICAL RULES:
+1. Each post must be suitable for ${platform.name}
+2. Tone must be ${tone}
+3. Include relevant hashtags
+4. Make content engaging and shareable
+5. Separate each post with exactly "---POST_SEPARATOR---"
+6. Do not use JSON, no arrays, no code blocks
+7. Keep within platform character limits (${platform.limit} max)
+8. No extra text before or after the posts`,
+          },
+          {
+            role: "user",
+            content: `Generate ${count} ${tone} social media posts about "${topic}" for ${platform.name}. Separate each post with exactly "---POST_SEPARATOR---".`,
+          },
+        ],
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const aiContent = data.choices[0]?.message?.content || "";
+
+    console.log("AI Response received:", aiContent);
+
+    // 使用分隔符分割帖子
+    let posts = aiContent
+      .split("---POST_SEPARATOR---")
+      .map((p: string) => p.trim())
+      .filter((p: string) => p.length > 0)
+      .slice(0, count);
+
+    console.log("Parsed posts:", posts);
+
+    // 如果分割失败，尝试用双换行分割
+    if (posts.length === 0) {
+      posts = aiContent
+        .split("\n\n")
+        .map((p: string) => p.trim())
+        .filter((p: string) => p.length > 0)
+        .slice(0, count);
+    }
+
+    // 如果还是没有帖子，使用模板
+    if (posts.length === 0) {
+      console.log("No valid posts from AI, using templates");
+      return generateTemplatePosts(topic, platform, tone, count);
+    }
+
+    // 如果帖子不够，用模板补充
+    while (posts.length < count) {
+      const templatePosts = generateTemplatePosts(topic, platform, tone, count - posts.length);
+      posts = posts.concat(templatePosts);
+    }
+
+    return posts.slice(0, count);
+  } catch (error) {
+    console.error("Error generating posts from API:", error);
+    // Fallback to template generation
+    return generateTemplatePosts(topic, platform, tone, count);
+  }
 }

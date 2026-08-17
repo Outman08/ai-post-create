@@ -65,7 +65,6 @@
   --font-sans: "Golos Text", ui-sans-serif, system-ui, sans-serif;
 }
 
-
 :root {
   --radius: 0.875rem;
   --background: oklch(0.995 0.002 258);
@@ -103,23 +102,18 @@
   --sidebar-border: oklch(0.915 0.004 260);
   --sidebar-ring: oklch(0.62 0.21 258);
 
-  --gradient-hero: radial-gradient(
+  --gradient-hero:
+    radial-gradient(
       120% 90% at 50% -10%,
       color-mix(in oklab, var(--primary-glow) 22%, transparent) 0%,
       transparent 60%
     ),
     linear-gradient(180deg, color-mix(in oklab, var(--primary) 8%, transparent), transparent 55%);
-  --gradient-primary: linear-gradient(
-    120deg,
-    oklch(0.62 0.21 258) 0%,
-    oklch(0.66 0.19 250) 100%
-  );
-  --shadow-soft: 0 1px 2px oklch(0.17 0.01 270 / 0.06), 0 8px 24px -12px oklch(0.17 0.01 270 / 0.18);
+  --gradient-primary: linear-gradient(120deg, oklch(0.62 0.21 258) 0%, oklch(0.66 0.19 250) 100%);
+  --shadow-soft:
+    0 1px 2px oklch(0.17 0.01 270 / 0.06), 0 8px 24px -12px oklch(0.17 0.01 270 / 0.18);
   --shadow-lift: 0 24px 60px -28px color-mix(in oklab, var(--primary) 45%, transparent);
 }
-
-
-
 
 .dark {
   --background: oklch(0.129 0.042 264.695);
@@ -186,4 +180,3 @@
   background-clip: text;
   color: transparent;
 }
-

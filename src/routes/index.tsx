@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Sparkles,
   Copy,
@@ -57,17 +57,20 @@ function PostCreatorPage() {
   const [posts, setPosts] = useState<string[]>([]);
   const [regenerateKey, setRegenerateKey] = useState(0);
 
-  async function fetchPosts(currentTopic: string, currentPlatform: Platform, currentTone: Tone) {
-    setLoading(true);
-    try {
-      const generatedPosts = await generatePosts(currentTopic, currentPlatform, currentTone);
-      setPosts(generatedPosts);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const fetchPosts = useCallback(
+    async (currentTopic: string, currentPlatform: Platform, currentTone: Tone) => {
+      setLoading(true);
+      try {
+        const generatedPosts = await generatePosts(currentTopic, currentPlatform, currentTone);
+        setPosts(generatedPosts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   function run(next?: string) {
     const value = (next ?? topic).trim();
@@ -88,7 +91,7 @@ function PostCreatorPage() {
     if (submitted) {
       fetchPosts(submitted, platform, tone);
     }
-  }, [platform, tone]);
+  }, [submitted, platform, tone, fetchPosts]);
 
   async function copy(text: string, index: number) {
     await navigator.clipboard.writeText(text);
@@ -266,8 +269,10 @@ function PostCreatorPage() {
                             <p className="text-xs text-muted-foreground">{platform.handleLabel}</p>
                           </div>
                         </div>
-                        <p className="mt-4 whitespace-pre-line text-sm leading-relaxed">{post}</p>
-                        <div className="mt-5 flex items-center gap-5 border-t border-border pt-4 text-muted-foreground">
+                        <p className="mt-4 flex-1 whitespace-pre-line text-sm leading-relaxed">
+                          {post}
+                        </p>
+                        <div className="mt-auto pt-4 flex items-center gap-5 border-t border-border text-muted-foreground">
                           <span className="flex items-center gap-1.5 text-xs">
                             <Heart className="size-4" /> 128
                           </span>
