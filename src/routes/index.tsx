@@ -11,9 +11,7 @@ import {
   Smartphone,
   ChevronRight,
   ArrowUpRight,
-
 } from "lucide-react";
-
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,7 +47,6 @@ export const Route = createFileRoute("/")({
   component: PostCreatorPage,
 });
 
-
 function PostCreatorPage() {
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState<Platform>(PLATFORMS[0] as Platform);
@@ -83,7 +80,7 @@ function PostCreatorPage() {
 
   function regenerate() {
     if (!submitted) return;
-    setRegenerateKey(k => k + 1);
+    setRegenerateKey((k) => k + 1);
     fetchPosts(submitted, platform, tone);
   }
 
@@ -143,9 +140,7 @@ function PostCreatorPage() {
             {/* Composer */}
             <div className="mx-auto mt-10 max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
               <div className="rounded-[var(--radius-xl)] bg-card p-4 md:p-5">
-                <h3 className="text-center text-[20px] font-medium">
-                  What is your post about?
-                </h3>
+                <h3 className="text-center text-[20px] font-medium">What is your post about?</h3>
                 <div className="relative mt-3">
                   <Textarea
                     id="topic"
@@ -212,16 +207,14 @@ function PostCreatorPage() {
                 </div>
 
                 <p className="mt-3 text-center text-[16px] text-muted-foreground">
-                  <span className="font-semibold text-foreground">Pro tip:</span>{" "}
-                  Include the platform, key points, your target audience and your desired outcome for this post.
+                  <span className="font-semibold text-foreground">Pro tip:</span> Include the
+                  platform, key points, your target audience and your desired outcome for this post.
                 </p>
-
-
               </div>
             </div>
 
             {/* Results */}
-            {submitted && (
+            {submitted ? (
               <div className="mx-auto mt-14 max-w-5xl">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-semibold">3 drafts for {platform.name}</h2>
@@ -232,7 +225,7 @@ function PostCreatorPage() {
                     disabled={loading}
                     className="rounded-full"
                   >
-                    <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
                     Regenerate
                   </Button>
                 </div>
@@ -290,19 +283,20 @@ function PostCreatorPage() {
                             className="ml-auto h-8 rounded-full px-3"
                             onClick={() => copy(post, i)}
                           >
-                          {copied === i ? (
-                            <Check className="size-4" />
-                          ) : (
-                            <Copy className="size-4" />
-                          )}
-                          {copied === i ? "Copied" : "Copy"}
-                        </Button>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                            {copied === i ? (
+                              <Check className="size-4" />
+                            ) : (
+                              <Copy className="size-4" />
+                            )}
+                            {copied === i ? "Copied" : "Copy"}
+                          </Button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            ) : null}
           </div>
         </section>
 
@@ -349,18 +343,27 @@ function PostCreatorPage() {
             <h2 className="text-[32px] font-medium">How to Create Better Social Media Posts</h2>
 
             <p className="mt-4 text-[16px]">
-              Creating a social media post is easy. Creating one that makes someone stop scrolling, understand your message, and take action is much harder.
+              Creating a social media post is easy. Creating one that makes someone stop scrolling,
+              understand your message, and take action is much harder.
             </p>
             <p className="mt-4 text-[16px]">
-              A strong social media post usually combines four elements: a clear idea, an attention-grabbing opening, useful or interesting content, and a reason to engage. The exact format should then be adapted to the platform and audience you're posting for.
+              A strong social media post usually combines four elements: a clear idea, an
+              attention-grabbing opening, useful or interesting content, and a reason to engage. The
+              exact format should then be adapted to the platform and audience you're posting for.
             </p>
             <p className="mt-4 text-[16px]">
-              The GeeLark Social Media Post Creator helps you turn a topic, product, promotion, or idea into ready-to-use social media content. Instead of starting with a blank page, you can generate a post and customize it for your brand, audience, and preferred social platform.
+              The GeeLark Social Media Post Creator helps you turn a topic, product, promotion, or
+              idea into ready-to-use social media content. Instead of starting with a blank page,
+              you can generate a post and customize it for your brand, audience, and preferred
+              social platform.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">What Is a Social Media Post Creator?</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              What Is a Social Media Post Creator?
+            </h3>
             <p className="mt-4 text-[16px]">
-              A social media post creator is a tool that helps you create content for platforms such as Instagram, Facebook, LinkedIn, X, and other social networks.
+              A social media post creator is a tool that helps you create content for platforms such
+              as Instagram, Facebook, LinkedIn, X, and other social networks.
             </p>
             <p className="mt-4 text-[16px]">
               An AI social media post creator can take a simple input such as:
@@ -369,7 +372,8 @@ function PostCreatorPage() {
               Announce the launch of our new productivity app for freelancers.
             </p>
             <p className="mt-4 text-[16px]">
-              And turn it into a more complete post with an opening hook, main message, call to action, and other elements appropriate for social media.
+              And turn it into a more complete post with an opening hook, main message, call to
+              action, and other elements appropriate for social media.
             </p>
             <p className="mt-4 text-[16px]">This can be useful when you need to:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6 text-[16px]">
@@ -385,15 +389,20 @@ function PostCreatorPage() {
               <li>Generate new social media post ideas</li>
             </ul>
             <p className="mt-4 text-[16px]">
-              The generated post should be treated as a starting point. Review the content, add your own expertise or brand personality, and make sure it fits the platform where you plan to publish it.
+              The generated post should be treated as a starting point. Review the content, add your
+              own expertise or brand personality, and make sure it fits the platform where you plan
+              to publish it.
             </p>
 
             <h3 className="mt-10 text-[22px] font-semibold">How to Create a Social Media Post</h3>
             <p className="mt-4 text-[16px]">
-              You don't need to write every social media post from scratch. Start with the information that matters most and build the post around it.
+              You don't need to write every social media post from scratch. Start with the
+              information that matters most and build the post around it.
             </p>
 
-            <h4 className="mt-6 text-[18px] font-semibold">1. Decide What You Want the Post to Achieve</h4>
+            <h4 className="mt-6 text-[18px] font-semibold">
+              1. Decide What You Want the Post to Achieve
+            </h4>
             <p className="mt-3 text-[16px]">Every post should have a purpose.</p>
             <p className="mt-4 text-[16px]">
               Before writing, ask what you want someone to do after seeing the post.
@@ -402,20 +411,31 @@ function PostCreatorPage() {
             <ul className="mt-2 list-disc space-y-1 pl-6 text-[16px]">
               <li>Awareness: Introduce your brand, product, or idea.</li>
               <li>Engagement: Encourage comments, shares, reactions, or discussion.</li>
-              <li>Traffic: Give people a reason to visit a website, article, product page, or other destination.</li>
-              <li>Conversion: Encourage an action such as signing up, downloading, booking, or purchasing.</li>
+              <li>
+                Traffic: Give people a reason to visit a website, article, product page, or other
+                destination.
+              </li>
+              <li>
+                Conversion: Encourage an action such as signing up, downloading, booking, or
+                purchasing.
+              </li>
               <li>Education: Teach your audience something useful.</li>
             </ul>
             <p className="mt-4 text-[16px]">
-              Trying to accomplish everything in a single post can weaken the message. Choosing one primary objective makes it easier to decide what to write and which call to action to use.
+              Trying to accomplish everything in a single post can weaken the message. Choosing one
+              primary objective makes it easier to decide what to write and which call to action to
+              use.
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">2. Start With a Strong Hook</h4>
             <p className="mt-3 text-[16px]">
-              The first line of a social media post has an important job: convincing someone to continue reading or watching.
+              The first line of a social media post has an important job: convincing someone to
+              continue reading or watching.
             </p>
             <p className="mt-4 text-[16px]">Compare:</p>
-            <p className="mt-2 text-[16px] italic">Generic: Here are some tips for social media marketing.</p>
+            <p className="mt-2 text-[16px] italic">
+              Generic: Here are some tips for social media marketing.
+            </p>
             <p className="mt-2 text-[16px] italic">
               More specific: Posting every day but still getting no engagement? Try these 5 changes.
             </p>
@@ -430,41 +450,45 @@ function PostCreatorPage() {
               <li>Lead with a useful takeaway</li>
             </ul>
             <p className="mt-4 text-[16px]">
-              Avoid exaggerated hooks that the rest of the post cannot support. Getting attention matters, but delivering on the opening is what makes the post useful.
+              Avoid exaggerated hooks that the rest of the post cannot support. Getting attention
+              matters, but delivering on the opening is what makes the post useful.
             </p>
 
-            <h4 className="mt-6 text-[18px] font-semibold">3. Make the Main Message Easy to Understand</h4>
-            <p className="mt-3 text-[16px]">
-              Once you have someone's attention, get to the point.
-            </p>
+            <h4 className="mt-6 text-[18px] font-semibold">
+              3. Make the Main Message Easy to Understand
+            </h4>
+            <p className="mt-3 text-[16px]">Once you have someone's attention, get to the point.</p>
             <p className="mt-4 text-[16px]">
-              Social feeds move quickly, so readers should not have to work hard to understand what you're trying to say.
+              Social feeds move quickly, so readers should not have to work hard to understand what
+              you're trying to say.
             </p>
             <p className="mt-4 text-[16px]">Instead of:</p>
             <p className="mt-2 text-[16px] italic">
-              We are delighted to announce that after many months of work, our team is incredibly excited to finally introduce the latest version of our platform.
+              We are delighted to announce that after many months of work, our team is incredibly
+              excited to finally introduce the latest version of our platform.
             </p>
             <p className="mt-4 text-[16px]">Consider:</p>
             <p className="mt-2 text-[16px] italic">Our biggest product update is live.</p>
-            <p className="mt-4 text-[16px]">
-              Then explain what changed and why it matters.
-            </p>
+            <p className="mt-4 text-[16px]">Then explain what changed and why it matters.</p>
             <p className="mt-4 text-[16px]">
               Short paragraphs, line breaks, and lists can also make longer posts easier to scan.
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">4. Give People a Reason to Care</h4>
             <p className="mt-3 text-[16px]">
-              A social media post should not only explain what happened. It should communicate why the information matters to the audience.
+              A social media post should not only explain what happened. It should communicate why
+              the information matters to the audience.
             </p>
             <p className="mt-4 text-[16px]">For a product announcement, don't stop at:</p>
             <p className="mt-2 text-[16px] italic">We just launched automatic reporting.</p>
             <p className="mt-4 text-[16px]">Explain the benefit:</p>
             <p className="mt-2 text-[16px] italic">
-              Automatic reporting is live. You can now turn campaign data into a weekly report without building the same spreadsheet every Friday.
+              Automatic reporting is live. You can now turn campaign data into a weekly report
+              without building the same spreadsheet every Friday.
             </p>
             <p className="mt-4 text-[16px]">
-              Specific benefits usually make stronger content than broad claims such as "save time" or "work smarter."
+              Specific benefits usually make stronger content than broad claims such as "save time"
+              or "work smarter."
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">5. Add a Clear Call to Action</h4>
@@ -483,39 +507,46 @@ function PostCreatorPage() {
               <li>Watch the full video</li>
               <li>Sign up for the event</li>
             </ul>
+            <p className="mt-4 text-[16px]">Your CTA doesn't always need to sell something.</p>
             <p className="mt-4 text-[16px]">
-              Your CTA doesn't always need to sell something.
-            </p>
-            <p className="mt-4 text-[16px]">
-              For an educational post, "Which of these have you tried?" may be more appropriate than "Buy now."
+              For an educational post, "Which of these have you tried?" may be more appropriate than
+              "Buy now."
             </p>
             <p className="mt-4 text-[16px]">
               Choose a CTA that naturally follows from the content.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">How Long Should a Social Media Post Be?</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              How Long Should a Social Media Post Be?
+            </h3>
             <p className="mt-4 text-[16px]">
               There is no universal ideal length for a social media post.
             </p>
             <p className="mt-4 text-[16px]">
-              Different platforms have different technical limits and, more importantly, different user behaviors. A post that works on LinkedIn may need significant changes before it works well on X or Instagram.
+              Different platforms have different technical limits and, more importantly, different
+              user behaviors. A post that works on LinkedIn may need significant changes before it
+              works well on X or Instagram.
             </p>
             <p className="mt-4 text-[16px]">
-              For example, a standard post on X is limited to 280 characters, while X Premium subscribers can create longer posts of up to 25,000 characters.
+              For example, a standard post on X is limited to 280 characters, while X Premium
+              subscribers can create longer posts of up to 25,000 characters.
             </p>
-            <p className="mt-4 text-[16px]">
-              A LinkedIn post can contain up to 3,000 characters.
-            </p>
+            <p className="mt-4 text-[16px]">A LinkedIn post can contain up to 3,000 characters.</p>
             <p className="mt-4 text-[16px]">
               But a maximum character limit should not be treated as a recommended length.
             </p>
             <p className="mt-4 text-[16px]">
-              A post should be long enough to communicate its message and short enough to avoid unnecessary information. If you can communicate an idea clearly in two sentences, don't turn it into eight paragraphs just to make the post look substantial.
+              A post should be long enough to communicate its message and short enough to avoid
+              unnecessary information. If you can communicate an idea clearly in two sentences,
+              don't turn it into eight paragraphs just to make the post look substantial.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">How to Adapt a Post for Different Social Media Platforms</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              How to Adapt a Post for Different Social Media Platforms
+            </h3>
             <p className="mt-4 text-[16px]">
-              One idea can work across several social networks, but copying and pasting exactly the same post everywhere isn't always the best approach.
+              One idea can work across several social networks, but copying and pasting exactly the
+              same post everywhere isn't always the best approach.
             </p>
             <p className="mt-4 text-[16px]">
               Adapt the structure, tone, length, and CTA to how people use each platform.
@@ -523,23 +554,30 @@ function PostCreatorPage() {
 
             <h4 className="mt-6 text-[18px] font-semibold">Instagram Posts</h4>
             <p className="mt-3 text-[16px]">
-              Instagram is highly visual, so the image, carousel, or video usually carries much of the initial attention.
+              Instagram is highly visual, so the image, carousel, or video usually carries much of
+              the initial attention.
             </p>
             <p className="mt-4 text-[16px]">
-              Use the caption to provide context, tell a story, explain the content, or encourage an action.
+              Use the caption to provide context, tell a story, explain the content, or encourage an
+              action.
             </p>
             <p className="mt-4 text-[16px]">For example:</p>
             <p className="mt-2 text-[16px] italic">
-              Three content mistakes we see brands make every week 👇<br />
-              Creating without a clear audience<br />
-              Talking only about the product<br />
-              Posting without learning from previous results<br />
+              Three content mistakes we see brands make every week 👇
+              <br />
+              Creating without a clear audience
+              <br />
+              Talking only about the product
+              <br />
+              Posting without learning from previous results
+              <br />
               Which one would you fix first?
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">Facebook Posts</h4>
             <p className="mt-3 text-[16px]">
-              Facebook can accommodate everything from short updates to longer stories and community-focused posts.
+              Facebook can accommodate everything from short updates to longer stories and
+              community-focused posts.
             </p>
             <p className="mt-4 text-[16px]">A good Facebook post might include:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6 text-[16px]">
@@ -549,18 +587,24 @@ function PostCreatorPage() {
               <li>A question or CTA</li>
             </ul>
             <p className="mt-4 text-[16px]">
-              For businesses, write for the audience rather than making every post sound like an advertisement.
+              For businesses, write for the audience rather than making every post sound like an
+              advertisement.
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">LinkedIn Posts</h4>
             <p className="mt-3 text-[16px]">
-              LinkedIn posts can contain up to 3,000 characters, allowing more room for professional insights, lessons, opinions, company updates, and educational content.
+              LinkedIn posts can contain up to 3,000 characters, allowing more room for professional
+              insights, lessons, opinions, company updates, and educational content.
             </p>
             <p className="mt-4 text-[16px]">For example:</p>
             <p className="mt-2 text-[16px] italic">
-              We changed one thing in our onboarding process last month.<br />
-              Instead of showing new users every feature, we focused on helping them complete one meaningful task.<br />
-              The lesson: onboarding isn't about teaching the entire product. It's about helping users reach value faster.
+              We changed one thing in our onboarding process last month.
+              <br />
+              Instead of showing new users every feature, we focused on helping them complete one
+              meaningful task.
+              <br />
+              The lesson: onboarding isn't about teaching the entire product. It's about helping
+              users reach value faster.
             </p>
             <p className="mt-4 text-[16px]">
               You don't need to use all 3,000 characters. Use the space your idea actually requires.
@@ -568,19 +612,25 @@ function PostCreatorPage() {
 
             <h4 className="mt-6 text-[18px] font-semibold">X Posts</h4>
             <p className="mt-3 text-[16px]">
-              For standard X posts, you have up to 280 characters, so concise writing becomes especially important.
+              For standard X posts, you have up to 280 characters, so concise writing becomes
+              especially important.
             </p>
             <p className="mt-4 text-[16px]">For example:</p>
             <p className="mt-2 text-[16px] italic">
-              You don't need more content ideas.<br />
-              You need a better system for turning one good idea into 10 useful posts.<br />
+              You don't need more content ideas.
+              <br />
+              You need a better system for turning one good idea into 10 useful posts.
+              <br />
               Create once. Repurpose intelligently. Distribute consistently.
             </p>
             <p className="mt-4 text-[16px]">
-              X Premium also supports longer posts, but short-form writing remains useful when the message can be communicated concisely.
+              X Premium also supports longer posts, but short-form writing remains useful when the
+              message can be communicated concisely.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">Should You Post the Same Content on Every Social Media Platform?</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              Should You Post the Same Content on Every Social Media Platform?
+            </h3>
             <p className="mt-4 text-[16px]">
               You can reuse the idea, but you don't necessarily need to reuse the exact wording.
             </p>
@@ -588,21 +638,28 @@ function PostCreatorPage() {
               Suppose you want to share the same customer success story across three platforms.
             </p>
             <p className="mt-4 text-[16px]">
-              On LinkedIn, you might explain the problem, solution, result, and lesson in a longer professional post.
+              On LinkedIn, you might explain the problem, solution, result, and lesson in a longer
+              professional post.
             </p>
             <p className="mt-4 text-[16px]">
-              On Instagram, you could turn the results into a carousel and use the caption to provide additional context.
+              On Instagram, you could turn the results into a carousel and use the caption to
+              provide additional context.
             </p>
             <p className="mt-4 text-[16px]">
-              On X, you might extract the strongest insight and communicate it in a few sentences or a thread.
+              On X, you might extract the strongest insight and communicate it in a few sentences or
+              a thread.
             </p>
             <p className="mt-4 text-[16px]">
-              This approach lets you get more value from one piece of content without making every social account feel identical.
+              This approach lets you get more value from one piece of content without making every
+              social account feel identical.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">Social Media Post Ideas for Businesses and Creators</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              Social Media Post Ideas for Businesses and Creators
+            </h3>
             <p className="mt-4 text-[16px]">
-              Not sure what to post? Start with repeatable content categories rather than trying to invent an entirely new concept every day.
+              Not sure what to post? Start with repeatable content categories rather than trying to
+              invent an entirely new concept every day.
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">Educational Posts</h4>
@@ -627,22 +684,24 @@ function PostCreatorPage() {
               Show what your product does through a specific use case or benefit.
             </p>
             <p className="mt-4 text-[16px]">Instead of:</p>
-            <p className="mt-2 text-[16px] italic">Our software has a powerful automation feature.</p>
+            <p className="mt-2 text-[16px] italic">
+              Our software has a powerful automation feature.
+            </p>
             <p className="mt-4 text-[16px]">Try:</p>
             <p className="mt-2 text-[16px] italic">
-              Publishing the same content across 20 accounts manually takes time. Here's how we automate the repetitive part.
+              Publishing the same content across 20 accounts manually takes time. Here's how we
+              automate the repetitive part.
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">Question Posts</h4>
-            <p className="mt-3 text-[16px]">
-              Invite your audience into the conversation.
-            </p>
+            <p className="mt-3 text-[16px]">Invite your audience into the conversation.</p>
             <p className="mt-4 text-[16px]">For example:</p>
             <p className="mt-2 text-[16px] italic">
               What's the one social media task you would automate if you could?
             </p>
             <p className="mt-4 text-[16px]">
-              Questions work best when they're easy to understand and relevant to the people following you.
+              Questions work best when they're easy to understand and relevant to the people
+              following you.
             </p>
 
             <h4 className="mt-6 text-[18px] font-semibold">Customer Story Posts</h4>
@@ -661,23 +720,33 @@ function PostCreatorPage() {
             </p>
             <p className="mt-4 text-[16px]">For example:</p>
             <p className="mt-2 text-[16px] italic">
-              5 things to check before publishing your next Instagram post:<br />
-              Is the hook specific?<br />
-              Is the main idea clear?<br />
-              Does the visual support the message?<br />
-              Is there unnecessary text?<br />
+              5 things to check before publishing your next Instagram post:
+              <br />
+              Is the hook specific?
+              <br />
+              Is the main idea clear?
+              <br />
+              Does the visual support the message?
+              <br />
+              Is there unnecessary text?
+              <br />
               Is the next action obvious?
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">How to Write Social Media Posts With AI</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              How to Write Social Media Posts With AI
+            </h3>
             <p className="mt-4 text-[16px]">
-              AI can speed up social media content creation, but better input usually produces better output.
+              AI can speed up social media content creation, but better input usually produces
+              better output.
             </p>
             <p className="mt-4 text-[16px]">Instead of entering:</p>
             <p className="mt-2 text-[16px] italic">Write a social media post.</p>
             <p className="mt-4 text-[16px]">Give the AI useful context:</p>
             <p className="mt-2 text-[16px] italic">
-              Write a LinkedIn post announcing a new analytics dashboard for ecommerce marketers. The main benefit is that users can see campaign performance without manually combining reports. Keep the tone conversational and end with an invitation to try it.
+              Write a LinkedIn post announcing a new analytics dashboard for ecommerce marketers.
+              The main benefit is that users can see campaign performance without manually combining
+              reports. Keep the tone conversational and end with an invitation to try it.
             </p>
             <p className="mt-4 text-[16px]">Useful information to provide includes:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6 text-[16px]">
@@ -690,47 +759,60 @@ function PostCreatorPage() {
               <li>CTA: What should readers do next?</li>
             </ul>
             <p className="mt-4 text-[16px]">
-              Think of AI as a writing assistant rather than an automatic publishing button. Always review generated posts for accuracy, relevance, tone, and unnecessary claims before publishing.
+              Think of AI as a writing assistant rather than an automatic publishing button. Always
+              review generated posts for accuracy, relevance, tone, and unnecessary claims before
+              publishing.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">How Often Should You Post on Social Media?</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              How Often Should You Post on Social Media?
+            </h3>
             <p className="mt-4 text-[16px]">
               There is no posting frequency that works for every account.
             </p>
             <p className="mt-4 text-[16px]">
-              The right schedule depends on your platform, audience, content resources, and ability to maintain quality.
+              The right schedule depends on your platform, audience, content resources, and ability
+              to maintain quality.
             </p>
             <p className="mt-4 text-[16px]">
               Instead of focusing only on volume, aim for a cadence you can sustain.
             </p>
             <p className="mt-4 text-[16px]">
-              For example, publishing three useful posts every week consistently may be more valuable than publishing three times per day for a week and then disappearing for a month.
+              For example, publishing three useful posts every week consistently may be more
+              valuable than publishing three times per day for a week and then disappearing for a
+              month.
             </p>
             <p className="mt-4 text-[16px]">
-              As you publish more content, review which topics, formats, hooks, and CTAs perform best and use those insights to guide future posts.
+              As you publish more content, review which topics, formats, hooks, and CTAs perform
+              best and use those insights to guide future posts.
             </p>
 
-            <h3 className="mt-10 text-[22px] font-semibold">Create Social Media Posts in Seconds</h3>
+            <h3 className="mt-10 text-[22px] font-semibold">
+              Create Social Media Posts in Seconds
+            </h3>
             <p className="mt-4 text-[16px]">
               You don't need to stare at a blank text box every time you want to publish something.
             </p>
             <p className="mt-4 text-[16px]">
-              Use the GeeLark Social Media Post Creator to turn your ideas into ready-to-edit social media posts.
+              Use the GeeLark Social Media Post Creator to turn your ideas into ready-to-edit social
+              media posts.
             </p>
             <p className="mt-4 text-[16px]">
-              Enter your topic, choose your platform and tone, and generate content for product announcements, educational posts, promotions, brand updates, engagement posts, and more.
+              Enter your topic, choose your platform and tone, and generate content for product
+              announcements, educational posts, promotions, brand updates, engagement posts, and
+              more.
             </p>
             <p className="mt-4 text-[16px]">
-              Once you've found a version you like, customize it with your own expertise, examples, brand voice, and call to action before publishing.
+              Once you've found a version you like, customize it with your own expertise, examples,
+              brand voice, and call to action before publishing.
             </p>
             <p className="mt-4 text-[16px]">
-              Whether you're creating content for Instagram, Facebook, LinkedIn, X, or multiple social media accounts, the Social Media Post Creator gives you a faster starting point for your next post.
+              Whether you're creating content for Instagram, Facebook, LinkedIn, X, or multiple
+              social media accounts, the Social Media Post Creator gives you a faster starting point
+              for your next post.
             </p>
           </article>
         </section>
-
-
-
 
         {/* FAQ */}
         <section id="faq" className="">
@@ -782,7 +864,6 @@ function PostCreatorPage() {
                   </AccordionContent>
                 </AccordionItem>
               ))}
-
             </Accordion>
           </div>
         </section>
@@ -794,7 +875,6 @@ function PostCreatorPage() {
               More free tools for creators
             </h2>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
               {[
                 {
                   name: "AI comment generator",
@@ -844,7 +924,6 @@ function PostCreatorPage() {
               ))}
             </div>
           </div>
-
         </section>
 
         {/* CTA */}
