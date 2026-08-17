@@ -98,30 +98,25 @@ function PostCreatorPage() {
     setCopied(index);
     window.setTimeout(() => setCopied(null), 1600);
   }
-
-  // 发送页面高度给父窗口
   useEffect(() => {
     document.documentElement.style.overflowY = "visible";
     document.body.style.overflowY = "visible";
 
     function sendRealHeight() {
       const realHeight = document.documentElement.scrollHeight;
+      // 第二个参数用"*"，允许发给任意父域名，生产环境可以换回真实域名
       window.parent.postMessage(
         {
           type: "iframe-height",
           height: realHeight,
         },
-        "https://www.geelark.com",
+        "*",
       );
     }
 
-    // 初始化发送
     sendRealHeight();
-
-    // 监听窗口大小变化
     window.addEventListener("resize", sendRealHeight);
 
-    // MutationObserver 监听 DOM 变化
     const observer = new MutationObserver(sendRealHeight);
     observer.observe(document.body, {
       childList: true,
