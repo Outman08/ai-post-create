@@ -100,36 +100,7 @@ function PostCreatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <a href="/" className="flex items-center gap-2">
-            <span className="grid size-8 place-items-center rounded-lg bg-[image:var(--gradient-primary)]">
-              <Smartphone className="size-4 text-primary-foreground" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">GeeLark</span>
-          </a>
-          <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-            <a className="transition-colors hover:text-foreground" href="#creator">
-              Creator
-            </a>
-            <a className="transition-colors hover:text-foreground" href="#how">
-              How it works
-            </a>
-            <a className="transition-colors hover:text-foreground" href="#guide">
-              Guide
-            </a>
-            <a className="transition-colors hover:text-foreground" href="#faq">
-              FAQ
-            </a>
-          </nav>
-
-          <Button size="sm" className="rounded-full">
-            Start free
-          </Button>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-white text-foreground">
       <main>
         {/* Hero + creator */}
         <section id="creator" className="">
@@ -269,10 +240,8 @@ function PostCreatorPage() {
                             <p className="text-xs text-muted-foreground">{platform.handleLabel}</p>
                           </div>
                         </div>
-                        <p className="mt-4 flex-1 whitespace-pre-line text-sm leading-relaxed">
-                          {post}
-                        </p>
-                        <div className="mt-auto pt-4 flex items-center gap-5 border-t border-border text-muted-foreground">
+                        <p className="mt-4 whitespace-pre-line text-sm leading-relaxed">{post}</p>
+                        <div className="mt-5 flex items-center gap-5 border-t border-border pt-4 text-muted-foreground">
                           <span className="flex items-center gap-1.5 text-xs">
                             <Heart className="size-4" /> 128
                           </span>
@@ -949,13 +918,6 @@ function PostCreatorPage() {
           </div>
         </section>
       </main>
-
-      <footer className="">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} GeeLark</p>
-          <p>Cloud phones for multi-account social media teams.</p>
-        </div>
-      </footer>
     </div>
   );
 }
