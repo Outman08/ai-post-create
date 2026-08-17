@@ -144,7 +144,7 @@ function PostCreatorPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-foreground overflow-hidden">
+    <div className="bg-white text-foreground" style={{ overflow: "hidden" }}>
       <main>
         {/* Hero + creator */}
         <section id="creator" className="">
