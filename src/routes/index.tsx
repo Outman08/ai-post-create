@@ -78,6 +78,7 @@ function PostCreatorPage() {
     setTopic(value);
     setCopied(null);
     setSubmitted(value);
+    // fetchPosts(value, platform, tone);
   }
 
   function regenerate() {
