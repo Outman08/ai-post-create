@@ -41,7 +41,7 @@ export default async function handler(request: Request) {
     }
 
     // ---------- 3. 检查 API Key ----------
-    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const apiKey = process.env["DEEPSEEK_API_KEY"];
 
     if (!apiKey) {
       // 没有 API Key 时返回预设模板

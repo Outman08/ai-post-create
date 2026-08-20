@@ -41,7 +41,7 @@ export default async function handler(request: Request) {
     }
 
     // ---------- 3. 检查 API Key ----------
-    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const apiKey = process.env["DEEPSEEK_API_KEY"];
 
     if (!apiKey) {
       // 没有 API Key 时返回预设模板
@@ -230,12 +230,12 @@ function generateTemplateNames(
   };
 
   const names: string[] = [];
-  const templates = STYLE_TEMPLATES[style] || STYLE_TEMPLATES["Local business"];
-  const modifiers = TONE_MODIFIERS[tone] || TONE_MODIFIERS["Friendly"];
+  const templates = (STYLE_TEMPLATES[style] || STYLE_TEMPLATES["Local business"])!;
+  const modifiers = (TONE_MODIFIERS[tone] || TONE_MODIFIERS["Friendly"])!;
 
   for (let i = 0; i < count; i++) {
-    const template = templates[i % templates.length];
-    const modifier = modifiers[i % modifiers.length];
+    const template = templates[i % templates.length]!;
+    const modifier = modifiers[i % modifiers.length]!;
     const keyword = i % 2 === 0 ? mainKeyword : secondKeyword;
     let name = template
       .replace(/{keyword}/g, capitalizeFirst(keyword))
