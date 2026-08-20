@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CommentGeneratorRouteImport } from './routes/comment-generator'
+import { Route as FacebookNameRouteImport } from './routes/facebook-name'
+import { Route as InstagramBioRouteImport } from './routes/instagram-bio'
+import { Route as InstagramHashtagRouteImport } from './routes/instagram-hashtag'
+import { Route as PostCreatorRouteImport } from './routes/post-creator'
+import { Route as TiktokHashtagRouteImport } from './routes/tiktok-hashtag'
+import { Route as TiktokHookRouteImport } from './routes/tiktok-hook'
+import { Route as YoutubeBoldRouteImport } from './routes/youtube-bold'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommentGeneratorRoute = CommentGeneratorRouteImport.update({
+  id: '/comment-generator',
+  path: '/comment-generator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacebookNameRoute = FacebookNameRouteImport.update({
+  id: '/facebook-name',
+  path: '/facebook-name',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstagramBioRoute = InstagramBioRouteImport.update({
+  id: '/instagram-bio',
+  path: '/instagram-bio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstagramHashtagRoute = InstagramHashtagRouteImport.update({
+  id: '/instagram-hashtag',
+  path: '/instagram-hashtag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostCreatorRoute = PostCreatorRouteImport.update({
+  id: '/post-creator',
+  path: '/post-creator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TiktokHashtagRoute = TiktokHashtagRouteImport.update({
+  id: '/tiktok-hashtag',
+  path: '/tiktok-hashtag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TiktokHookRoute = TiktokHookRouteImport.update({
+  id: '/tiktok-hook',
+  path: '/tiktok-hook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const YoutubeBoldRoute = YoutubeBoldRouteImport.update({
+  id: '/youtube-bold',
+  path: '/youtube-bold',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/comment-generator': typeof CommentGeneratorRoute
+  '/facebook-name': typeof FacebookNameRoute
+  '/instagram-bio': typeof InstagramBioRoute
+  '/instagram-hashtag': typeof InstagramHashtagRoute
+  '/post-creator': typeof PostCreatorRoute
+  '/tiktok-hashtag': typeof TiktokHashtagRoute
+  '/tiktok-hook': typeof TiktokHookRoute
+  '/youtube-bold': typeof YoutubeBoldRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/comment-generator': typeof CommentGeneratorRoute
+  '/facebook-name': typeof FacebookNameRoute
+  '/instagram-bio': typeof InstagramBioRoute
+  '/instagram-hashtag': typeof InstagramHashtagRoute
+  '/post-creator': typeof PostCreatorRoute
+  '/tiktok-hashtag': typeof TiktokHashtagRoute
+  '/tiktok-hook': typeof TiktokHookRoute
+  '/youtube-bold': typeof YoutubeBoldRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/comment-generator': typeof CommentGeneratorRoute
+  '/facebook-name': typeof FacebookNameRoute
+  '/instagram-bio': typeof InstagramBioRoute
+  '/instagram-hashtag': typeof InstagramHashtagRoute
+  '/post-creator': typeof PostCreatorRoute
+  '/tiktok-hashtag': typeof TiktokHashtagRoute
+  '/tiktok-hook': typeof TiktokHookRoute
+  '/youtube-bold': typeof YoutubeBoldRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/comment-generator'
+    | '/facebook-name'
+    | '/instagram-bio'
+    | '/instagram-hashtag'
+    | '/post-creator'
+    | '/tiktok-hashtag'
+    | '/tiktok-hook'
+    | '/youtube-bold'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/comment-generator'
+    | '/facebook-name'
+    | '/instagram-bio'
+    | '/instagram-hashtag'
+    | '/post-creator'
+    | '/tiktok-hashtag'
+    | '/tiktok-hook'
+    | '/youtube-bold'
+  id:
+    | '__root__'
+    | '/'
+    | '/comment-generator'
+    | '/facebook-name'
+    | '/instagram-bio'
+    | '/instagram-hashtag'
+    | '/post-creator'
+    | '/tiktok-hashtag'
+    | '/tiktok-hook'
+    | '/youtube-bold'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CommentGeneratorRoute: typeof CommentGeneratorRoute
+  FacebookNameRoute: typeof FacebookNameRoute
+  InstagramBioRoute: typeof InstagramBioRoute
+  InstagramHashtagRoute: typeof InstagramHashtagRoute
+  PostCreatorRoute: typeof PostCreatorRoute
+  TiktokHashtagRoute: typeof TiktokHashtagRoute
+  TiktokHookRoute: typeof TiktokHookRoute
+  YoutubeBoldRoute: typeof YoutubeBoldRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/comment-generator': {
+      id: '/comment-generator'
+      path: '/comment-generator'
+      fullPath: '/comment-generator'
+      preLoaderRoute: typeof CommentGeneratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/facebook-name': {
+      id: '/facebook-name'
+      path: '/facebook-name'
+      fullPath: '/facebook-name'
+      preLoaderRoute: typeof FacebookNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/instagram-bio': {
+      id: '/instagram-bio'
+      path: '/instagram-bio'
+      fullPath: '/instagram-bio'
+      preLoaderRoute: typeof InstagramBioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/instagram-hashtag': {
+      id: '/instagram-hashtag'
+      path: '/instagram-hashtag'
+      fullPath: '/instagram-hashtag'
+      preLoaderRoute: typeof InstagramHashtagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post-creator': {
+      id: '/post-creator'
+      path: '/post-creator'
+      fullPath: '/post-creator'
+      preLoaderRoute: typeof PostCreatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tiktok-hashtag': {
+      id: '/tiktok-hashtag'
+      path: '/tiktok-hashtag'
+      fullPath: '/tiktok-hashtag'
+      preLoaderRoute: typeof TiktokHashtagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tiktok-hook': {
+      id: '/tiktok-hook'
+      path: '/tiktok-hook'
+      fullPath: '/tiktok-hook'
+      preLoaderRoute: typeof TiktokHookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/youtube-bold': {
+      id: '/youtube-bold'
+      path: '/youtube-bold'
+      fullPath: '/youtube-bold'
+      preLoaderRoute: typeof YoutubeBoldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CommentGeneratorRoute: CommentGeneratorRoute,
+  FacebookNameRoute: FacebookNameRoute,
+  InstagramBioRoute: InstagramBioRoute,
+  InstagramHashtagRoute: InstagramHashtagRoute,
+  PostCreatorRoute: PostCreatorRoute,
+  TiktokHashtagRoute: TiktokHashtagRoute,
+  TiktokHookRoute: TiktokHookRoute,
+  YoutubeBoldRoute: YoutubeBoldRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

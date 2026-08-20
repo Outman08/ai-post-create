@@ -103,7 +103,7 @@ export async function generatePosts(
     if (isLocalhost) {
       console.log("📍 本地开发：直接调用 DeepSeek API");
 
-      const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY;
+      const apiKey = import.meta.env["VITE_DEEPSEEK_API_KEY"];
       if (!apiKey) {
         console.log("No API key found, using template posts");
         return generateTemplatePosts(topic, platform, tone, count);

@@ -34,10 +34,10 @@ export default async function handler(request: Request) {
     const { topic, platform, tone, count = 3 } = await request.json();
 
     if (!topic || !platform || !tone) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // ---------- 3. 检查 API Key ----------
@@ -156,26 +156,14 @@ function generateTemplatePosts(topic: string, platform: string, tone: string, co
   };
 
   const closers = {
-    Friendly: [
-      "Save this for later 💾",
-      "Tell me if you try it 👇",
-      "Hope this helps!",
-    ],
+    Friendly: ["Save this for later 💾", "Tell me if you try it 👇", "Hope this helps!"],
     Professional: [
       "Full breakdown in the comments.",
       "Happy to share the workflow.",
       "Curious how your team handles this.",
     ],
-    Bold: [
-      "Run it. Thank me later.",
-      "Your competitors already do this.",
-      "No excuses now.",
-    ],
-    Playful: [
-      "You're welcome 😌",
-      "Go on, try it 🚀",
-      "It's giving efficiency ✨",
-    ],
+    Bold: ["Run it. Thank me later.", "Your competitors already do this.", "No excuses now."],
+    Playful: ["You're welcome 😌", "Go on, try it 🚀", "It's giving efficiency ✨"],
     Informative: [
       "Sources and setup steps below.",
       "Bookmark for your next launch.",
