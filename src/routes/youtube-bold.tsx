@@ -199,15 +199,7 @@ function YouTubeBoldPage() {
   return (
     <div className="min-h-screen font-sans text-foreground bg-white">
       <main>
-        <section className="relative overflow-hidden">
-          <div className="relative mx-auto max-w-6xl px-5 pb-16 pt-5 text-center sm:pt-5">
-            <h1 className="mx-auto max-w-none whitespace-nowrap font-display text-[7.2vw] font-medium leading-[1.08] tracking-tight text-foreground sm:text-[56px]">
-              YouTube bold text generator
-            </h1>
-          </div>
-        </section>
-
-        <section id="generator" className="mx-auto max-w-6xl px-5 pb-20">
+        <section id="generator" className="mx-auto max-w-6xl px-5 py-20">
           <BoldTextGenerator />
         </section>
       </main>
