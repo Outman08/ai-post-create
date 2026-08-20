@@ -134,16 +134,6 @@ function FacebookNamePage() {
   return (
     <div className="min-h-screen bg-white text-foreground">
       <main>
-        <div className="mx-auto max-w-6xl px-5 pt-12 pb-5">
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="size-4" />
-            <span>Back to all tools</span>
-          </Link>
-        </div>
-
         <section className="relative overflow-hidden">
           <div className="relative mx-auto max-w-6xl rounded-2xl border border-border/50 bg-background px-5 pb-10 pt-5 text-center shadow-soft sm:pt-20">
             <h1 className="mx-auto max-w-3xl font-display text-[56px] font-medium leading-[1.08] tracking-tight text-foreground">

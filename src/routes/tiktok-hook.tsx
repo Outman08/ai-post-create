@@ -229,15 +229,7 @@ function HookGeneratorPage() {
         }
       `}</style>
 
-      <div className="mx-auto max-w-6xl px-5 py-6">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ChevronLeft className="size-4" />
-          Back to tools
-        </Link>
-      </div>
+
 
       <main>
         <section id="generator" className="px-5 pb-16 pt-4">

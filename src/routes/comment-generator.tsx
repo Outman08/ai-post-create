@@ -207,16 +207,6 @@ function CommentGenerator() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-5 pt-8">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ChevronLeft className="size-4" />
-          Back to all tools
-        </Link>
-      </div>
-
       <main>
         <section id="generator" className="px-5 pt-12 pb-20">
           <div className="mx-auto max-w-4xl text-center">

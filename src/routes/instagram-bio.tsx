@@ -135,12 +135,6 @@ function InstagramBioPage() {
       <main>
         <section className="relative overflow-hidden">
           <div className="relative mx-auto max-w-6xl px-5 pb-16 pt-12 text-center sm:pt-20">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
-            >
-              ← Back to tools
-            </Link>
             <h1 className="mx-auto max-w-3xl font-display text-[56px] font-medium leading-[1.08] tracking-tight text-foreground">
               Instagram bio generator
             </h1>

@@ -147,12 +147,6 @@ function HashtagGeneratorPage() {
         <section id="generator">
           <div className="mx-auto max-w-6xl px-5 pb-20 pt-16 md:pt-24">
             <div className="mx-auto max-w-4xl text-center">
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
-              >
-                ← Back to tools
-              </Link>
               <h1 className="text-[56px] font-medium leading-[1.05] text-foreground">
                 TikTok hashtag generator
               </h1>

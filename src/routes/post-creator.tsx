@@ -254,16 +254,6 @@ function PostCreatorPage() {
   return (
     <div className="bg-white text-foreground">
       <main>
-        <div className="mx-auto max-w-6xl px-5 pt-12 pb-5">
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="size-4" />
-            <span>Back to all tools</span>
-          </Link>
-        </div>
-
         {/* Hero + creator */}
         <section id="creator" className="">
           <div className="mx-auto max-w-6xl px-5 pb-20 pt-5">
