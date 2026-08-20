@@ -236,6 +236,13 @@ function PostCreatorPage() {
         },
         "*",
       );
+      window.parent.postMessage(
+        {
+          type: "iframe-height",
+          height: height,
+        },
+        "*",
+      );
     }
 
     // 页面加载、窗口resize、dom变化都上报高度
