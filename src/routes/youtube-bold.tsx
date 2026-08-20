@@ -199,7 +199,7 @@ function YouTubeBoldPage() {
   return (
     <div className="min-h-screen font-sans text-foreground bg-white">
       <main>
-        <section id="generator" className="mx-auto max-w-6xl px-5 py-20">
+        <section id="generator" className="mx-auto max-w-6xl px-5 py-5">
           <BoldTextGenerator />
         </section>
       </main>
