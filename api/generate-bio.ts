@@ -148,8 +148,8 @@ function generateTemplateBios(description: string, tone: string, count: number) 
     return arr[Math.abs(seed) % arr.length] as T;
   }
 
-  const e = EMOJI[tone] || EMOJI.Playful;
-  const t = taglines[tone] || taglines.Playful;
+  const e = (EMOJI[tone] || EMOJI["Playful"])!;
+  const t = (taglines[tone] || taglines["Playful"])!;
   const em = (i: number, seed: number) => `${pick(e, seed + i)} `;
 
   const bios: string[] = [];
