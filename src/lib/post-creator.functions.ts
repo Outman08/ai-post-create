@@ -1,3 +1,8 @@
+import { createServerFn } from "@tanstack/react-start";
+import { generateText } from "ai";
+import { z } from "zod";
+import { checkRateLimit, RATE_LIMIT_INFO } from "./rate-limit.server";
+
 export type PlatformId = "tiktok" | "instagram" | "x" | "linkedin" | "facebook";
 
 export type Platform = {
@@ -17,6 +22,13 @@ export const PLATFORMS: Platform[] = [
 
 export const TONES = ["Friendly", "Professional", "Bold", "Playful", "Informative"] as const;
 export type Tone = (typeof TONES)[number];
+
+const Input = z.object({
+  topic: z.string().min(1).max(500),
+  platformId: z.enum(["tiktok", "instagram", "x", "linkedin", "facebook"]),
+  tone: z.enum(["Friendly", "Professional", "Bold", "Playful", "Informative"]),
+  count: z.number().optional().default(3),
+});
 
 const HASHTAGS: Record<PlatformId, string[]> = {
   tiktok: ["#cloudphone", "#antidetect", "#socialmediagrowth", "#geelark"],
@@ -78,7 +90,7 @@ function generateTemplatePosts(
   for (let i = 0; i < count; i++) {
     const seed = hash(`${base}|${platform.id}|${tone}|${i}`);
     const post = `${pick(OPENERS[tone], seed)} ${base}.\n\nGeeLark spins up real cloud Android phones, each with its own device fingerprint, so every account looks and behaves like a separate person. No extra hardware, no juggling SIMs.\n\n${pick(CLOSERS[tone], seed)}`;
-    const withTags = platform.id === "linkedin" ? `${post}\n\n${tags}` : `${post}\n\n${tags}`;
+    const withTags = `${post}\n\n${tags}`;
     bodies.push(
       withTags.length > platform.limit
         ? `${withTags.slice(0, Math.max(0, platform.limit - 1)).trimEnd()}…`
@@ -89,128 +101,69 @@ function generateTemplatePosts(
   return bodies;
 }
 
-export async function generatePosts(
-  topic: string,
-  platform: Platform,
-  tone: Tone,
-  count = 3,
-): Promise<string[]> {
-  try {
-    // 判断是否在本地开发（localhost）
-    const isLocalhost =
-      window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+export const generatePosts = createServerFn({ method: "POST" })
+  .validator((data: unknown) => Input.parse(data))
+  .handler(async ({ data }) => {
+    // 1) 限流检查（基于 Upstash Redis，按 IP 维度 10 次/小时）
+    const limit = await checkRateLimit("post-creator");
+    if (!limit.ok) {
+      const secs = Math.ceil(limit.retryAfterMs / 1000);
+      const mins = Math.ceil(secs / 60);
+      throw new Error(
+        `已达到使用限制！每小时最多生成${RATE_LIMIT_INFO.max}次，请${mins}分钟后再试。`,
+      );
+    }
 
-    if (isLocalhost) {
-      console.log("📍 本地开发：直接调用 DeepSeek API");
+    const platform = PLATFORMS.find((p) => p.id === data.platformId) || PLATFORMS[0]!;
 
-      const apiKey = import.meta.env["VITE_DEEPSEEK_API_KEY"];
-      if (!apiKey) {
-        console.log("No API key found, using template posts");
-        return generateTemplatePosts(topic, platform, tone, count);
-      }
+    // 2) 尝试 DeepSeek
+    const key = process.env["DEEPSEEK_API_KEY"];
+    if (key) {
+      try {
+        const { createDeepSeekProvider } = await import("./ai-gateway.server");
+        const deepseek = createDeepSeekProvider(key);
 
-      console.log("Calling DeepSeek API...");
-
-      // 使用 DeepSeek API 直接调用
-      const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "deepseek-chat",
-          messages: [
-            {
-              role: "system",
-              content: `You are a professional social media post generator. Generate ${count} high-quality social media posts.
+        const result = await generateText({
+          model: deepseek("deepseek-chat"),
+          system: `You are a professional social media post generator. Generate ${data.count} high-quality social media posts.
 
 CRITICAL RULES:
 1. Each post must be suitable for ${platform.name}
-2. Tone must be ${tone}
+2. Tone must be ${data.tone}
 3. Include relevant hashtags
 4. Make content engaging and shareable
 5. Separate each post with exactly "---POST_SEPARATOR---"
 6. Do not use JSON, no arrays, no code blocks
 7. Keep within platform character limits (${platform.limit} max)
 8. No extra text before or after the posts`,
-            },
-            {
-              role: "user",
-              content: `Generate ${count} ${tone} social media posts about "${topic}" for ${platform.name}. Separate each post with exactly "---POST_SEPARATOR---".`,
-            },
-          ],
+          prompt: `Generate ${data.count} ${data.tone} social media posts about "${data.topic}" for ${platform.name}. Separate each post with exactly "---POST_SEPARATOR---".`,
           temperature: 0.7,
-        }),
-      });
+        });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        let posts = result.text
+          .split("---POST_SEPARATOR---")
+          .map((p) => p.trim())
+          .filter((p) => p.length > 0)
+          .slice(0, data.count);
+
+        // 如果分割失败，尝试用双换行分割
+        if (posts.length === 0) {
+          posts = result.text
+            .split("\n\n")
+            .map((p) => p.trim())
+            .filter((p) => p.length > 0)
+            .slice(0, data.count);
+        }
+
+        if (posts.length > 0) {
+          return { posts, isTemplate: false };
+        }
+      } catch {
+        // AI 失败时回退到模板
       }
-
-      const data = await response.json();
-      const aiContent = data.choices[0]?.message?.content || "";
-
-      console.log("AI Response received:", aiContent);
-
-      // 使用分隔符分割帖子
-      let posts = aiContent
-        .split("---POST_SEPARATOR---")
-        .map((p: string) => p.trim())
-        .filter((p: string) => p.length > 0)
-        .slice(0, count);
-
-      console.log("Parsed posts:", posts);
-
-      // 如果分割失败，尝试用双换行分割
-      if (posts.length === 0) {
-        posts = aiContent
-          .split("\n\n")
-          .map((p: string) => p.trim())
-          .filter((p: string) => p.length > 0)
-          .slice(0, count);
-      }
-
-      // 如果还是没有帖子，使用模板
-      if (posts.length === 0) {
-        console.log("No valid posts from AI, using templates");
-        return generateTemplatePosts(topic, platform, tone, count);
-      }
-
-      // 如果帖子不够，用模板补充
-      while (posts.length < count) {
-        const templatePosts = generateTemplatePosts(topic, platform, tone, count - posts.length);
-        posts = posts.concat(templatePosts);
-      }
-
-      return posts.slice(0, count);
-    } else {
-      console.log("🚀 Vercel 环境：调用 Edge Function");
-
-      // Vercel 部署：调用 Edge Function
-      const response = await fetch("/api/generate-posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic,
-          platform: platform.name,
-          tone,
-          count,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("API 响应收到：", data);
-
-      return data.posts || generateTemplatePosts(topic, platform, tone, count);
     }
-  } catch (error) {
-    console.error("生成帖子时出错：", error);
-    // 错误时使用模板
-    return generateTemplatePosts(topic, platform, tone, count);
-  }
-}
+
+    // 3) 模板 fallback
+    const posts = generateTemplatePosts(data.topic, platform, data.tone, data.count || 3);
+    return { posts, isTemplate: true };
+  });

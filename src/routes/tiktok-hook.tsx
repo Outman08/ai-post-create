@@ -189,6 +189,7 @@ function HookGeneratorPage() {
     const sendHeight = () => {
       const height = document.documentElement.scrollHeight;
       window.parent.postMessage({ type: "setIframeHeight", height: height }, "*");
+      window.parent.postMessage({ type: "iframe-height", height: height }, "*");
     };
 
     sendHeight();
@@ -208,6 +209,7 @@ function HookGeneratorPage() {
     const sendHeight = () => {
       const height = document.documentElement.scrollHeight;
       window.parent.postMessage({ type: "setIframeHeight", height: height }, "*");
+      window.parent.postMessage({ type: "iframe-height", height: height }, "*");
     };
     sendHeight();
   }, [hooks.length, openFaq]);
@@ -228,8 +230,6 @@ function HookGeneratorPage() {
           display: none;
         }
       `}</style>
-
-
 
       <main>
         <section id="generator" className="px-5 pb-16 pt-4">

@@ -5,6 +5,11 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    serverFns: {
+      // 项目通过 vite.config.ts 插件已将 CSRF 中间件替换为 mock（适配 iframe 嵌入场景），
+      // 此处仅消除 TanStack Start 的弃用警告。
+      disableCsrfMiddlewareWarning: true,
+    },
   },
   vite: {
     plugins: [

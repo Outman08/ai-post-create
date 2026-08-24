@@ -36,7 +36,7 @@ function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
 }
 
 export const generateComments = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => Input.parse(data))
+  .validator((data: unknown) => Input.parse(data))
   .handler(async ({ data }) => {
     // 1) 限流检查（在消耗 DeepSeek 额度之前拦截）
     const limit = checkRateLimit();

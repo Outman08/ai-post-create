@@ -84,10 +84,18 @@ function HashtagGeneratorPage() {
   // Send scroll height to parent window
   useEffect(() => {
     const sendHeight = () => {
+      const height = document.body.scrollHeight;
       window.parent.postMessage(
         {
           type: "setIframeHeight",
-          height: document.body.scrollHeight,
+          height: height,
+        },
+        "*",
+      );
+      window.parent.postMessage(
+        {
+          type: "iframe-height",
+          height: height,
         },
         "*",
       );

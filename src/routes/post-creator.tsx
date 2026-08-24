@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   Sparkles,
@@ -8,27 +8,19 @@ import {
   Heart,
   MessageCircle,
   Repeat2,
-  Smartphone,
   ChevronRight,
-  ArrowUpRight,
-  ArrowLeft,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import {
   PLATFORMS,
   TONES,
   generatePosts,
   type Platform,
   type Tone,
-} from "@/components/post-creator/generator";
+} from "@/lib/post-creator.functions";
 
 const TITLE = "Free AI Social Media Post Creator | GeeLark";
 const DESCRIPTION =
@@ -112,89 +104,35 @@ function PostCreatorPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState<number | null>(null);
   const [posts, setPosts] = useState<string[]>([]);
+  const [isTemplate, setIsTemplate] = useState(false);
   const [regenerateKey, setRegenerateKey] = useState(0);
+  const [generateKey, setGenerateKey] = useState(0);
+  const fetchPostsFn = useServerFn(generatePosts);
 
   const fetchPosts = useCallback(
     async (currentTopic: string, currentPlatform: Platform, currentTone: Tone) => {
-      // 前端限流：每小时最多10次
-      const RATE_LIMIT = 10;
-      const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1小时
-      const RATE_KEYS = [
-        "post_generator_rate_limit",
-        "post_generator_rate_limit_backup",
-        "_gl_pg_rl",
-      ];
-
-      const now = Date.now();
-      let rateData = { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
-
-      // 从多个存储位置读取，取最大的计数
-      let maxCount = 0;
-      let latestResetTime = now + RATE_LIMIT_WINDOW;
-
-      for (const key of RATE_KEYS) {
-        try {
-          const storedLocal = localStorage.getItem(key);
-          if (storedLocal) {
-            const data = JSON.parse(storedLocal);
-            if (now <= data.resetTime && data.count > maxCount) {
-              maxCount = data.count;
-              latestResetTime = data.resetTime;
-            }
-          }
-
-          const storedSession = sessionStorage.getItem(key);
-          if (storedSession) {
-            const data = JSON.parse(storedSession);
-            if (now <= data.resetTime && data.count > maxCount) {
-              maxCount = data.count;
-              latestResetTime = data.resetTime;
-            }
-          }
-        } catch (e) {
-          // 读取失败，忽略
-        }
-      }
-
-      if (maxCount > 0) {
-        rateData = { count: maxCount, resetTime: latestResetTime };
-      }
-
-      if (rateData.count >= RATE_LIMIT) {
-        const remainingMinutes = Math.ceil((rateData.resetTime - now) / 60000);
-        alert(`已达到使用限制！每小时最多生成${RATE_LIMIT}次，请${remainingMinutes}分钟后再试。`);
-        return;
-      }
-
-      // 更新计数到多个存储位置
-      rateData.count += 1;
-      for (const key of RATE_KEYS) {
-        try {
-          localStorage.setItem(key, JSON.stringify(rateData));
-          sessionStorage.setItem(key, JSON.stringify(rateData));
-        } catch (e) {
-          // 写入失败，忽略
-        }
-      }
-
-      // 还可以尝试写入 cookie（1小时过期）
-      try {
-        document.cookie = `${RATE_KEYS[0]}=${encodeURIComponent(JSON.stringify(rateData))}; max-age=${RATE_LIMIT_WINDOW / 1000}; path=/`;
-      } catch (e) {
-        // cookie 写入失败，忽略
-      }
+      if (!currentTopic.trim()) return;
 
       setLoading(true);
       try {
-        const generatedPosts = await generatePosts(currentTopic, currentPlatform, currentTone);
-        setPosts(generatedPosts);
+        const result = await fetchPostsFn({
+          data: {
+            topic: currentTopic,
+            platformId: currentPlatform.id,
+            tone: currentTone,
+            count: 3,
+          },
+        });
+        setPosts(result.posts);
+        setIsTemplate(result.isTemplate || false);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("生成帖子时出错：", error);
+        alert(error instanceof Error ? error.message : "生成失败，请重试");
       } finally {
         setLoading(false);
       }
     },
-    [],
+    [fetchPostsFn],
   );
 
   function run(next?: string) {
@@ -203,19 +141,19 @@ function PostCreatorPage() {
     setTopic(value);
     setCopied(null);
     setSubmitted(value);
+    setGenerateKey((prev) => prev + 1);
   }
 
   function regenerate() {
     if (!submitted) return;
-    setRegenerateKey((k) => k + 1);
+    setRegenerateKey((prev) => prev + 1);
     fetchPosts(submitted, platform, tone);
   }
 
   useEffect(() => {
-    if (submitted) {
-      fetchPosts(submitted, platform, tone);
-    }
-  }, [submitted, platform, tone, fetchPosts]);
+    if (!submitted) return;
+    fetchPosts(submitted, platform, tone);
+  }, [generateKey, fetchPosts]);
 
   async function copy(text: string, index: number) {
     await navigator.clipboard.writeText(text);
@@ -251,12 +189,22 @@ function PostCreatorPage() {
     const observer = new ResizeObserver(sendHeight);
     observer.observe(document.body);
 
+    // 额外的 MutationObserver 确保所有 DOM 变化都触发
+    const mutationObserver = new MutationObserver(sendHeight);
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true,
+    });
+
     return () => {
       window.removeEventListener("load", sendHeight);
       window.removeEventListener("resize", sendHeight);
       observer.disconnect();
+      mutationObserver.disconnect();
     };
-  }, []);
+  }, [submitted, loading, posts.length]);
 
   return (
     <div className="bg-white text-foreground">
@@ -350,7 +298,18 @@ function PostCreatorPage() {
             {submitted ? (
               <div className="mx-auto mt-14 max-w-5xl">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold">3 drafts for {platform.name}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-semibold">3 drafts for {platform.name}</h2>
+                    {isTemplate ? (
+                      <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                        📋 Template
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                        ✨ AI
+                      </span>
+                    )}
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"

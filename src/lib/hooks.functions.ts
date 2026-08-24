@@ -33,7 +33,7 @@ function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
 }
 
 export const generateHooks = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => inputSchema.parse(data))
+  .validator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<{ hooks: GeneratedHook[] }> => {
     // 1) 限流检查（在消耗 DeepSeek 额度之前拦截）
     const limit = checkRateLimit();

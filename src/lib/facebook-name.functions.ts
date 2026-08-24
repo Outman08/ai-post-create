@@ -209,7 +209,7 @@ function capitalizeFirst(str: string): string {
 }
 
 export const generateFacebookNames = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => Input.parse(data))
+  .validator((data: unknown) => Input.parse(data))
   .handler(async ({ data }) => {
     // 1) 限流检查
     const limit = checkRateLimit();

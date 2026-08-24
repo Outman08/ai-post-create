@@ -1,20 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { Sparkles, Copy, Check, RefreshCw, ChevronRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronRight, ListChecks, Type, Wand2 } from "lucide-react";
-import { BioGenerator } from "@/components/instagram-bio/generator";
+
+import { generateBios } from "@/lib/instagram-bio.functions";
 import { SeoArticle } from "@/components/instagram-bio/seo-article";
 import { MoreTools } from "@/components/instagram-bio/more-tools";
 
-const TITLE = "Instagram Bio Generator — Free AI-Style Bio Ideas in Seconds";
+const TITLE = "Free Instagram Bio Generator | GeeLark";
 const DESCRIPTION =
-  "Generate scroll-stopping Instagram bios in seconds. Pick a tone, add your niche and keywords, and copy a bio that fits the 150-character limit.";
+  "Generate Instagram-ready bios in seconds. Describe yourself, pick a style, get multiple bio options, then publish from real GeeLark cloud phones.";
 
 export const Route = createFileRoute("/instagram-bio")({
   head: () => ({
@@ -35,26 +40,26 @@ export const Route = createFileRoute("/instagram-bio")({
           mainEntity: [
             {
               "@type": "Question",
-              name: "What is an Instagram bio generator?",
+              name: "How does the Instagram bio generator work?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "An Instagram bio generator is a free tool that creates bio ideas based on your description and preferred tone. It helps you quickly produce profile descriptions that fit Instagram's 150-character limit.",
+                text: "Add a description of yourself or your account, pick a tone, and our generator will create multiple Instagram bio options optimized for the 150-character limit.",
               },
             },
             {
               "@type": "Question",
-              name: "Is this Instagram bio generator free?",
+              name: "What tones are available for Instagram bios?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "Yes. The GeeLark Instagram Bio Generator is completely free to use. You can generate, copy, and edit as many bio ideas as you want without signing up.",
+                text: "Choose from professional, playful, aesthetic, bold, minimal, or funny tones to match your account's personality and brand voice.",
               },
             },
             {
               "@type": "Question",
-              name: "How does the GeeLark bio generator work?",
+              name: "How many characters can an Instagram bio be?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "Enter a short description of yourself or your brand, choose a tone like professional, playful, or bold, and click Create me a bio. The generator instantly returns several bio options you can copy and paste into Instagram.",
+                text: "Instagram bios are limited to 150 characters. Our generator ensures every option stays within this limit while still being engaging and informative.",
               },
             },
           ],
@@ -65,32 +70,40 @@ export const Route = createFileRoute("/instagram-bio")({
   component: InstagramBioPage,
 });
 
-const STEPS = [
-  {
-    icon: Type,
-    title: "Describe yourself",
-    body: "Add your name, niche, who you help, and a few keywords people actually search for.",
-  },
-  {
-    icon: Wand2,
-    title: "Choose a tone",
-    body: "Professional, playful, aesthetic, bold, minimal or funny — the wording adapts to each.",
-  },
-  {
-    icon: ListChecks,
-    title: "Copy and paste",
-    body: "Every option is checked against Instagram's 150-character limit before you copy it.",
-  },
-];
-
 function InstagramBioPage() {
+  const [description, setDescription] = useState("");
+  const [tone, setTone] = useState("Playful");
+  const [results, setResults] = useState<string[] | null>(null);
+  const [isTemplate, setIsTemplate] = useState(false);
+  const [copied, setCopied] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fn = useServerFn(generateBios);
+  const mutation = useMutation({
+    mutationFn: (vars: { description: string; tone: string }) => fn({ data: vars }),
+    onSuccess: (data) => {
+      setResults(data.bios);
+      setIsTemplate(data.isTemplate || false);
+    },
+  });
+
+  const TONES = ["Professional", "Playful", "Aesthetic", "Bold", "Minimal", "Funny"];
+
   // Send scroll height to parent window
   useEffect(() => {
     const sendHeight = () => {
+      const height = document.body.scrollHeight;
       window.parent.postMessage(
         {
           type: "setIframeHeight",
-          height: document.body.scrollHeight,
+          height: height,
+        },
+        "*",
+      );
+      window.parent.postMessage(
+        {
+          type: "iframe-height",
+          height: height,
         },
         "*",
       );
@@ -114,7 +127,7 @@ function InstagramBioPage() {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
-  }, []);
+  }, [results?.length, mutation.isPending]);
 
   // Handle link clicks in iframe
   useEffect(() => {
@@ -130,37 +143,190 @@ function InstagramBioPage() {
     return () => document.removeEventListener("click", handleClick);
   }, []);
 
-  return (
-    <div className="min-h-screen font-sans text-foreground">
-      <main>
-        <section className="relative overflow-hidden">
-          <div className="relative mx-auto max-w-6xl px-5 pb-16 pt-12 text-center sm:pt-20">
-            <h1 className="mx-auto max-w-3xl font-display text-[56px] font-medium leading-[1.08] tracking-tight text-foreground">
-              Instagram bio generator
-            </h1>
-          </div>
-        </section>
+  function run() {
+    const value = description.trim();
+    if (!value) return;
+    setCopied(null);
+    mutation.mutate({ description: value, tone: tone });
+  }
 
-        <section id="generator" className="mx-auto max-w-6xl px-5 pb-20">
-          <BioGenerator />
+  async function copy(text: string, index: number) {
+    await navigator.clipboard.writeText(text);
+    setCopied(index);
+    window.setTimeout(() => setCopied(null), 1600);
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <main>
+        <section id="generator">
+          <div className="mx-auto max-w-6xl px-5 pb-20 pt-16 md:pt-24">
+            <div className="mx-auto max-w-4xl text-center">
+              <h1 className="text-[56px] font-medium leading-[1.05] text-foreground">
+                Instagram bio generator
+              </h1>
+            </div>
+
+            <div className="mx-auto mt-10 max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
+              <div className="rounded-[var(--radius-xl)] bg-card p-4 md:p-5">
+                <h3 className="text-center text-[20px] font-medium">
+                  Describe yourself or your account
+                </h3>
+                <div className="mt-3">
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Tell us about yourself, what you do, who you help, or what your account is about"
+                    className="min-h-32 resize-none border-0 bg-muted/60 text-[16px] focus-visible:ring-1"
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <div className="text-[14px] font-medium text-foreground">Choose a tone</div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {TONES.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setTone(t)}
+                        className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
+                          tone === t
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    onClick={run}
+                    disabled={!description.trim() || mutation.isPending}
+                    className="rounded-lg px-6"
+                  >
+                    {mutation.isPending ? (
+                      <RefreshCw className="size-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="size-4" />
+                    )}
+                    {mutation.isPending ? "Generating bios…" : "Create me a bio"}
+                  </Button>
+                </div>
+
+                {mutation.isError && (
+                  <p className="mt-3 text-center text-sm text-destructive">
+                    {(mutation.error as Error).message}
+                  </p>
+                )}
+
+                <p className="mt-3 text-center text-[16px] text-muted-foreground">
+                  <span className="font-semibold text-foreground">Pro tip:</span>
+                  The more specific you are, the more tailored your bio options will be.
+                </p>
+              </div>
+            </div>
+
+            {mutation.data && !mutation.isPending && (
+              <div className="mx-auto mt-14 max-w-5xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl font-semibold">Your bio options</h2>
+                    {isTemplate ? (
+                      <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                        📋 Template fallback
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                        ✨ AI generated
+                      </span>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => mutation.mutate({ description, tone })}
+                    disabled={mutation.isPending}
+                    className="rounded-full"
+                  >
+                    <RefreshCw className={`size-4 ${mutation.isPending ? "animate-spin" : ""}`} />
+                    Regenerate
+                  </Button>
+                </div>
+
+                <div className="mt-5 grid gap-5">
+                  {mutation.data.bios.map((bio, i) => {
+                    const length = bio.replace(/\n/g, "").length;
+                    return (
+                      <article
+                        key={i}
+                        className="rounded-[var(--radius-xl)] border border-border bg-card p-5 shadow-[var(--shadow-soft)]"
+                      >
+                        <p className="whitespace-pre-line text-[15px] leading-relaxed">{bio}</p>
+                        <div className="mt-4 flex items-center justify-between">
+                          <span
+                            className={`text-xs ${
+                              length > 150 ? "text-destructive" : "text-muted-foreground"
+                            }`}
+                          >
+                            {length}/150 characters
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copy(bio, i)}
+                            className="rounded-full"
+                          >
+                            {copied === i ? (
+                              <Check className="size-4" />
+                            ) : (
+                              <Copy className="size-4" />
+                            )}
+                            {copied === i ? "Copied" : "Copy"}
+                          </Button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </section>
 
         <section id="how">
           <div className="mx-auto max-w-6xl px-5 py-20">
             <div className="max-w-xl">
-              <h2 className="text-[32px] font-medium">How it works</h2>
+              <h2 className="text-[32px] font-medium">From bio to published</h2>
             </div>
             <ol className="mt-10 grid gap-6 md:grid-cols-3">
-              {STEPS.map((step, i) => (
+              {[
+                {
+                  n: "01",
+                  title: "Describe yourself",
+                  body: "Tell us about yourself, your account, or what you do.",
+                },
+                {
+                  n: "02",
+                  title: "Generate",
+                  body: "With one click, generate multiple Instagram bio options in your chosen tone.",
+                },
+                {
+                  n: "03",
+                  title: "Publish",
+                  body: "Post from real GeeLark cloud phones — every account on its own Android device.",
+                },
+              ].map((s) => (
                 <li
-                  key={step.title}
-                  className="rounded-[var(--radius-xl)] border border-border p-6 shadow-[var(--shadow-soft)]"
+                  key={s.n}
+                  className="rounded-[var(--radius-xl)] border border-border bg-card p-6 shadow-[var(--shadow-soft)]"
                 >
-                  <span className="font-display text-sm font-bold text-primary">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-3 text-[22px] font-semibold">{step.title}</h3>
-                  <p className="mt-2 text-[16px] text-muted-foreground">{step.body}</p>
+                  <span className="font-display text-sm font-bold text-primary">{s.n}</span>
+                  <h3 className="mt-3 text-[22px] font-semibold">{s.title}</h3>
+                  <p className="mt-2 text-[16px] text-muted-foreground">{s.body}</p>
                 </li>
               ))}
             </ol>
@@ -169,51 +335,34 @@ function InstagramBioPage() {
 
         <SeoArticle />
 
-        {/* FAQ */}
         <section id="faq">
           <div className="mx-auto max-w-3xl px-5 py-20">
             <h2 className="text-3xl font-medium md:text-4xl">Frequently asked questions</h2>
             <Accordion type="single" collapsible className="mt-8">
               {[
                 {
-                  q: "What is an Instagram bio generator?",
-                  a: "An Instagram bio generator is a free tool that creates bio ideas based on your description and preferred tone. It helps you quickly produce profile descriptions that fit Instagram's 150-character limit.",
+                  q: "How does the Instagram bio generator work?",
+                  a: "Add a description of yourself or your account, pick a tone, and our generator will create multiple Instagram bio options optimized for the 150-character limit.",
                 },
                 {
-                  q: "Is this Instagram bio generator free?",
-                  a: "Yes. The GeeLark Instagram Bio Generator is completely free to use. You can generate, copy, and edit as many bio ideas as you want without signing up.",
+                  q: "What tones are available for Instagram bios?",
+                  a: "Choose from professional, playful, aesthetic, bold, minimal, or funny tones to match your account's personality and brand voice.",
                 },
                 {
-                  q: "How does the GeeLark bio generator work?",
-                  a: "Enter a short description of yourself or your brand, choose a tone like professional, playful, or bold, and click Create me a bio. The generator instantly returns several bio options you can copy and paste into Instagram.",
+                  q: "How many characters can an Instagram bio be?",
+                  a: "Instagram bios are limited to 150 characters. Our generator ensures every option stays within this limit while still being engaging and informative.",
                 },
                 {
-                  q: "What tones can I choose for my Instagram bio?",
-                  a: "You can choose from Professional, Playful, Aesthetic, Bold, Minimal, and Funny. Each tone changes the wording, emojis, and overall feel of the generated bios.",
+                  q: "Is the Instagram bio generator free?",
+                  a: "Yes. Generating Instagram bios is free and needs no account. You only sign up when you want to publish from GeeLark cloud phones.",
                 },
                 {
-                  q: "Will the generated bios fit Instagram's 150-character limit?",
-                  a: "Yes. Every generated bio is checked against Instagram's 150-character limit. If a suggestion is close to the limit, you'll see the character count so you can decide before copying.",
+                  q: "Can I use these bios for multiple Instagram accounts?",
+                  a: "Yes. Generate different bios per account to match each one's unique niche and voice, then publish from the GeeLark cloud phone assigned to that account.",
                 },
                 {
-                  q: "Can I use these bios for business accounts?",
-                  a: "Absolutely. The generator works for personal accounts, creators, influencers, small businesses, and brands. Just describe what you do and pick a tone that matches your brand voice.",
-                },
-                {
-                  q: "Do I need to sign up to use the generator?",
-                  a: "No. You can use the Instagram Bio Generator without creating an account. You only need a GeeLark account if you want to manage and publish from multiple Instagram profiles on cloud phones.",
-                },
-                {
-                  q: "Can I edit the generated bio before using it?",
-                  a: "Yes. The generated bios are starting points. You can copy any option into Instagram and edit the text, emojis, line breaks, and call to action however you like.",
-                },
-                {
-                  q: "How can GeeLark help me manage multiple Instagram accounts?",
-                  a: "GeeLark provides cloud phones with unique device fingerprints and proxies, so you can run multiple Instagram accounts securely from one dashboard without needing physical phones.",
-                },
-                {
-                  q: "What makes a good Instagram bio?",
-                  a: "A good Instagram bio quickly explains who you are, what you offer, and why someone should follow you. It stays within 150 characters, uses clear formatting, and includes one simple call to action.",
+                  q: "What should I include in my Instagram bio?",
+                  a: "A strong Instagram bio usually includes who you are, what you do, why someone should follow you, and a clear call to action — all within the 150-character limit.",
                 },
               ].map((item) => (
                 <AccordionItem key={item.q} value={item.q}>
@@ -232,11 +381,11 @@ function InstagramBioPage() {
         <section className="mx-auto max-w-6xl px-5 py-20">
           <div className="overflow-hidden rounded-[var(--radius-3xl)] border border-border bg-[image:var(--gradient-primary)] px-8 py-14 text-center shadow-[var(--shadow-lift)]">
             <h2 className="text-3xl font-medium text-primary-foreground md:text-4xl">
-              Build bios that convert, then scale them across every account
+              Grow your Instagram presence with confidence
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-primary-foreground/85">
-              Generate your next Instagram bio in seconds, then publish and manage every profile
-              from its own GeeLark cloud phone.
+              Spin up your first GeeLark cloud phone in under a minute and publish your next post
+              today.
             </p>
             <Button variant="secondary" className="mt-7 rounded-lg px-7 text-[16px]">
               Start free

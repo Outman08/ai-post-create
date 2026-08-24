@@ -179,6 +179,7 @@ function CommentGenerator() {
     const sendHeight = () => {
       const height = document.documentElement.scrollHeight;
       window.parent.postMessage({ type: "setIframeHeight", height: height }, "*");
+      window.parent.postMessage({ type: "iframe-height", height: height }, "*");
     };
 
     sendHeight();

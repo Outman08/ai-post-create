@@ -182,6 +182,13 @@ function YouTubeBoldPage() {
         },
         "*",
       );
+      window.parent.postMessage(
+        {
+          type: "iframe-height",
+          height: height,
+        },
+        "*",
+      );
     }
 
     window.addEventListener("load", sendHeight);

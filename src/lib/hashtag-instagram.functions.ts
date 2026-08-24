@@ -35,7 +35,7 @@ function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
 }
 
 export const generateInstagramHashtags = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => inputSchema.parse(data))
+  .validator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<{ groups: HashtagGroup[]; isAI: boolean }> => {
     // 1) 限流检查
     const limit = checkRateLimit();
