@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Copy, Check, Sparkles, RefreshCw } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateBios } from "@/lib/instagram-bio.functions";
+import { copyToClipboard } from "@/lib/utils";
 
 const TONES = ["Professional", "Playful", "Aesthetic", "Bold", "Minimal", "Funny"] as const;
 type Tone = (typeof TONES)[number];
@@ -56,9 +57,11 @@ export function BioGenerator() {
   };
 
   const copy = async (text: string, i: number) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(i);
-    setTimeout(() => setCopied(null), 1600);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(i);
+      setTimeout(() => setCopied(null), 1600);
+    }
   };
 
   return (

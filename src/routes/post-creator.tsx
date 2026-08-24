@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 import {
   Sparkles,
   Copy,
@@ -21,6 +22,7 @@ import {
   type Platform,
   type Tone,
 } from "@/lib/post-creator.functions";
+import { copyToClipboard } from "@/lib/utils";
 
 const TITLE = "Free AI Social Media Post Creator | GeeLark";
 const DESCRIPTION =
@@ -156,55 +158,13 @@ function PostCreatorPage() {
   }, [generateKey, fetchPosts]);
 
   async function copy(text: string, index: number) {
-    await navigator.clipboard.writeText(text);
-    setCopied(index);
-    window.setTimeout(() => setCopied(null), 1600);
-  }
-  // 发送页面高度给父窗口
-  useEffect(() => {
-    document.documentElement.style.overflowY = "visible";
-    document.body.style.overflowY = "visible";
-
-    function sendHeight() {
-      const height = document.documentElement.scrollHeight;
-      window.parent.postMessage(
-        {
-          type: "setIframeHeight",
-          height: height,
-        },
-        "*",
-      );
-      window.parent.postMessage(
-        {
-          type: "iframe-height",
-          height: height,
-        },
-        "*",
-      );
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(index);
+      window.setTimeout(() => setCopied(null), 1600);
     }
-
-    // 页面加载、窗口resize、dom变化都上报高度
-    window.addEventListener("load", sendHeight);
-    window.addEventListener("resize", sendHeight);
-    const observer = new ResizeObserver(sendHeight);
-    observer.observe(document.body);
-
-    // 额外的 MutationObserver 确保所有 DOM 变化都触发
-    const mutationObserver = new MutationObserver(sendHeight);
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
-    });
-
-    return () => {
-      window.removeEventListener("load", sendHeight);
-      window.removeEventListener("resize", sendHeight);
-      observer.disconnect();
-      mutationObserver.disconnect();
-    };
-  }, [submitted, loading, posts.length]);
+  }
+  useIframeHeight();
 
   return (
     <div className="bg-white text-foreground">

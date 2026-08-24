@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 import { Sparkles, Copy, Check, RefreshCw, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
 import { generateBios } from "@/lib/instagram-bio.functions";
 import { SeoArticle } from "@/components/instagram-bio/seo-article";
 import { MoreTools } from "@/components/instagram-bio/more-tools";
+import { copyToClipboard } from "@/lib/utils";
 
 const TITLE = "Free Instagram Bio Generator | GeeLark";
 const DESCRIPTION =
@@ -89,45 +91,7 @@ function InstagramBioPage() {
 
   const TONES = ["Professional", "Playful", "Aesthetic", "Bold", "Minimal", "Funny"];
 
-  // Send scroll height to parent window
-  useEffect(() => {
-    const sendHeight = () => {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage(
-        {
-          type: "setIframeHeight",
-          height: height,
-        },
-        "*",
-      );
-      window.parent.postMessage(
-        {
-          type: "iframe-height",
-          height: height,
-        },
-        "*",
-      );
-    };
-
-    sendHeight();
-    const resizeObserver = new ResizeObserver(sendHeight);
-    resizeObserver.observe(document.body);
-
-    const mutationObserver = new MutationObserver(sendHeight);
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
-    });
-
-    window.addEventListener("resize", sendHeight);
-    return () => {
-      window.removeEventListener("resize", sendHeight);
-      resizeObserver.disconnect();
-      mutationObserver.disconnect();
-    };
-  }, [results?.length, mutation.isPending]);
+  useIframeHeight();
 
   // Handle link clicks in iframe
   useEffect(() => {
@@ -151,9 +115,11 @@ function InstagramBioPage() {
   }
 
   async function copy(text: string, index: number) {
-    await navigator.clipboard.writeText(text);
-    setCopied(index);
-    window.setTimeout(() => setCopied(null), 1600);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(index);
+      window.setTimeout(() => setCopied(null), 1600);
+    }
   }
 
   return (

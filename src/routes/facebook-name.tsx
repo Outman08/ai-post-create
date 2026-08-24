@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 
 const TITLE = "Facebook Name Generator — Free AI Name Ideas in Seconds | GeeLark";
 const DESCRIPTION =
@@ -131,6 +132,8 @@ export const Route = createFileRoute("/facebook-name")({
 });
 
 function FacebookNamePage() {
+  useIframeHeight();
+
   return (
     <div className="min-h-screen bg-white text-foreground">
       <main>

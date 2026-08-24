@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
@@ -15,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { generateHooks, type GeneratedHook } from "@/lib/hooks.functions";
-import { cn } from "@/lib/utils";
+import { cn, copyToClipboard } from "@/lib/utils";
 
 export const Route = createFileRoute("/tiktok-hook")({
   head: () => ({
@@ -185,39 +186,14 @@ function HookGeneratorPage() {
 
   const hooks: GeneratedHook[] = mutation.data?.hooks ?? [];
 
-  useEffect(() => {
-    const sendHeight = () => {
-      const height = document.documentElement.scrollHeight;
-      window.parent.postMessage({ type: "setIframeHeight", height: height }, "*");
-      window.parent.postMessage({ type: "iframe-height", height: height }, "*");
-    };
-
-    sendHeight();
-    const observer = new ResizeObserver(() => sendHeight());
-    observer.observe(document.body);
-    window.addEventListener("resize", sendHeight);
-    window.addEventListener("load", sendHeight);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", sendHeight);
-      window.removeEventListener("load", sendHeight);
-    };
-  }, []);
-
-  useEffect(() => {
-    const sendHeight = () => {
-      const height = document.documentElement.scrollHeight;
-      window.parent.postMessage({ type: "setIframeHeight", height: height }, "*");
-      window.parent.postMessage({ type: "iframe-height", height: height }, "*");
-    };
-    sendHeight();
-  }, [hooks.length, openFaq]);
+  useIframeHeight();
 
   const copy = async (text: string, i: number) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(i);
-    setTimeout(() => setCopied(null), 1500);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(i);
+      setTimeout(() => setCopied(null), 1500);
+    }
   };
 
   return (

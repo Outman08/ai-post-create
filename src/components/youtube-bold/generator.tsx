@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Check, Copy, Eraser } from "lucide-react";
+import { copyToClipboard } from "@/lib/utils";
 
 type StyleDef = {
   id: string;
@@ -98,9 +99,11 @@ export function BoldTextGenerator() {
   );
 
   const copy = async (value: string, id: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(id);
-    setTimeout(() => setCopied(null), 1600);
+    const success = await copyToClipboard(value);
+    if (success) {
+      setCopied(id);
+      setTimeout(() => setCopied(null), 1600);
+    }
   };
 
   return (

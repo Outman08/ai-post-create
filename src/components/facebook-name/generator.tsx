@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Copy, Check, Sparkles, RefreshCw } from "lucide-react";
 import { generateFacebookNames } from "@/lib/facebook-name.functions";
+import { copyToClipboard } from "@/lib/utils";
 
 const ACCOUNT_TYPES = ["Personal", "Business"] as const;
 type AccountType = (typeof ACCOUNT_TYPES)[number];
@@ -440,9 +441,11 @@ export function NameGenerator() {
   };
 
   const copy = async (text: string, i: number) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(i);
-    setTimeout(() => setCopied(null), 1600);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(i);
+      setTimeout(() => setCopied(null), 1600);
+    }
   };
 
   return (

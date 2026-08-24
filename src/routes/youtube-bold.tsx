@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ArrowUpRight, ChevronRight, ClipboardCopy, Type, Sparkles, ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 
 const TITLE = "YouTube Bold Text Generator — Free Unicode Bold for Titles";
 const DESCRIPTION =
@@ -169,39 +169,7 @@ export const Route = createFileRoute("/youtube-bold")({
 });
 
 function YouTubeBoldPage() {
-  useEffect(() => {
-    document.documentElement.style.overflowY = "visible";
-    document.body.style.overflowY = "visible";
-
-    function sendHeight() {
-      const height = document.documentElement.scrollHeight;
-      window.parent.postMessage(
-        {
-          type: "setIframeHeight",
-          height: height,
-        },
-        "*",
-      );
-      window.parent.postMessage(
-        {
-          type: "iframe-height",
-          height: height,
-        },
-        "*",
-      );
-    }
-
-    window.addEventListener("load", sendHeight);
-    window.addEventListener("resize", sendHeight);
-    const observer = new ResizeObserver(sendHeight);
-    observer.observe(document.body);
-
-    return () => {
-      window.removeEventListener("load", sendHeight);
-      window.removeEventListener("resize", sendHeight);
-      observer.disconnect();
-    };
-  }, []);
+  useIframeHeight();
 
   return (
     <div className="min-h-screen font-sans text-foreground bg-white">

@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 import { Sparkles, Copy, Check, RefreshCw, Hash, ArrowUpRight, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { flatten } from "@/components/tiktok-hashtag/generator";
 import { generateTikTokHashtags } from "@/lib/hashtag-tiktok.functions";
 import { SeoArticle } from "@/components/tiktok-hashtag/seo-article";
 import { MoreTools } from "@/components/tiktok-hashtag/more-tools";
+import { copyToClipboard } from "@/lib/utils";
 
 const TITLE = "Free TikTok Hashtag Generator | GeeLark";
 const DESCRIPTION =
@@ -81,45 +83,7 @@ function HashtagGeneratorPage() {
 
   const groups = mutation.data?.groups ?? [];
 
-  // Send scroll height to parent window
-  useEffect(() => {
-    const sendHeight = () => {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage(
-        {
-          type: "setIframeHeight",
-          height: height,
-        },
-        "*",
-      );
-      window.parent.postMessage(
-        {
-          type: "iframe-height",
-          height: height,
-        },
-        "*",
-      );
-    };
-
-    sendHeight();
-    const resizeObserver = new ResizeObserver(sendHeight);
-    resizeObserver.observe(document.body);
-
-    const mutationObserver = new MutationObserver(sendHeight);
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
-    });
-
-    window.addEventListener("resize", sendHeight);
-    return () => {
-      window.removeEventListener("resize", sendHeight);
-      resizeObserver.disconnect();
-      mutationObserver.disconnect();
-    };
-  }, [groups.length, mutation.isPending]);
+  useIframeHeight();
 
   // Handle link clicks in iframe
   useEffect(() => {
@@ -143,9 +107,11 @@ function HashtagGeneratorPage() {
   }
 
   async function copy(text: string, key: string) {
-    await navigator.clipboard.writeText(text);
-    setCopied(key);
-    window.setTimeout(() => setCopied(null), 1600);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(key);
+      window.setTimeout(() => setCopied(null), 1600);
+    }
   }
 
   return (

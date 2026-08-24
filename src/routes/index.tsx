@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles, MessageSquare, Type, User, Hash, Video, Bold, ChevronRight } from "lucide-react";
+import { useIframeHeight } from "@/hooks/use-iframe-height";
 
 const TITLE = "GeeLark Free Tools - AI Social Media Tools";
 const DESCRIPTION =
@@ -83,6 +84,8 @@ const TOOLS = [
 ];
 
 function HomePage() {
+  useIframeHeight();
+
   return (
     <div className="bg-white text-foreground min-h-screen">
       <main>
