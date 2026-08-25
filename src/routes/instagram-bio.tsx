@@ -126,14 +126,8 @@ function InstagramBioPage() {
     <div className="min-h-screen bg-background text-foreground">
       <main>
         <section id="generator">
-          <div className="mx-auto max-w-6xl px-5 pb-20 pt-16 md:pt-24">
-            <div className="mx-auto max-w-4xl text-center">
-              <h1 className="text-[56px] font-medium leading-[1.05] text-foreground">
-                Instagram bio generator
-              </h1>
-            </div>
-
-            <div className="mx-auto mt-10 max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
+          <div>
+            <div className="mx-auto max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
               <div className="rounded-[var(--radius-xl)] bg-card p-4 md:p-5">
                 <h3 className="text-center text-[20px] font-medium">
                   Describe yourself or your account
@@ -260,103 +254,6 @@ function InstagramBioPage() {
                 </div>
               </div>
             )}
-          </div>
-        </section>
-
-        <section id="how">
-          <div className="mx-auto max-w-6xl px-5 py-20">
-            <div className="max-w-xl">
-              <h2 className="text-[32px] font-medium">From bio to published</h2>
-            </div>
-            <ol className="mt-10 grid gap-6 md:grid-cols-3">
-              {[
-                {
-                  n: "01",
-                  title: "Describe yourself",
-                  body: "Tell us about yourself, your account, or what you do.",
-                },
-                {
-                  n: "02",
-                  title: "Generate",
-                  body: "With one click, generate multiple Instagram bio options in your chosen tone.",
-                },
-                {
-                  n: "03",
-                  title: "Publish",
-                  body: "Post from real GeeLark cloud phones — every account on its own Android device.",
-                },
-              ].map((s) => (
-                <li
-                  key={s.n}
-                  className="rounded-[var(--radius-xl)] border border-border bg-card p-6 shadow-[var(--shadow-soft)]"
-                >
-                  <span className="font-display text-sm font-bold text-primary">{s.n}</span>
-                  <h3 className="mt-3 text-[22px] font-semibold">{s.title}</h3>
-                  <p className="mt-2 text-[16px] text-muted-foreground">{s.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <SeoArticle />
-
-        <section id="faq">
-          <div className="mx-auto max-w-3xl px-5 py-20">
-            <h2 className="text-3xl font-medium md:text-4xl">Frequently asked questions</h2>
-            <Accordion type="single" collapsible className="mt-8">
-              {[
-                {
-                  q: "How does the Instagram bio generator work?",
-                  a: "Add a description of yourself or your account, pick a tone, and our generator will create multiple Instagram bio options optimized for the 150-character limit.",
-                },
-                {
-                  q: "What tones are available for Instagram bios?",
-                  a: "Choose from professional, playful, aesthetic, bold, minimal, or funny tones to match your account's personality and brand voice.",
-                },
-                {
-                  q: "How many characters can an Instagram bio be?",
-                  a: "Instagram bios are limited to 150 characters. Our generator ensures every option stays within this limit while still being engaging and informative.",
-                },
-                {
-                  q: "Is the Instagram bio generator free?",
-                  a: "Yes. Generating Instagram bios is free and needs no account. You only sign up when you want to publish from GeeLark cloud phones.",
-                },
-                {
-                  q: "Can I use these bios for multiple Instagram accounts?",
-                  a: "Yes. Generate different bios per account to match each one's unique niche and voice, then publish from the GeeLark cloud phone assigned to that account.",
-                },
-                {
-                  q: "What should I include in my Instagram bio?",
-                  a: "A strong Instagram bio usually includes who you are, what you do, why someone should follow you, and a clear call to action — all within the 150-character limit.",
-                },
-              ].map((item) => (
-                <AccordionItem key={item.q} value={item.q}>
-                  <AccordionTrigger className="text-left text-base">{item.q}</AccordionTrigger>
-                  <AccordionContent className="text-[16px] text-muted-foreground">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </section>
-
-        <MoreTools />
-
-        <section className="mx-auto max-w-6xl px-5 py-20">
-          <div className="overflow-hidden rounded-[var(--radius-3xl)] border border-border bg-[image:var(--gradient-primary)] px-8 py-14 text-center shadow-[var(--shadow-lift)]">
-            <h2 className="text-3xl font-medium text-primary-foreground md:text-4xl">
-              Grow your Instagram presence with confidence
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-primary-foreground/85">
-              Spin up your first GeeLark cloud phone in under a minute and publish your next post
-              today.
-            </p>
-            <Button variant="secondary" className="mt-7 rounded-lg px-7 text-[16px]">
-              Start free
-              <ChevronRight className="size-4" />
-            </Button>
           </div>
         </section>
       </main>
