@@ -209,9 +209,7 @@ function HookGeneratorPage() {
 
       <main>
         <section id="generator" className="px-5 pb-16 pt-4">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-[56px] font-medium leading-tight">TikTok video hook generator</h1>
-          </div>
+          <div className="mx-auto max-w-3xl text-center"></div>
 
           <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-border bg-card p-6 shadow-card md:p-8">
             <h2 className="text-center text-lg font-medium">What is your video about?</h2>

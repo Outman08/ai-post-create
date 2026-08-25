@@ -193,13 +193,8 @@ function CommentGenerator() {
   return (
     <div className="min-h-screen bg-background">
       <main>
-        <section id="generator" className="px-5 pt-12 pb-20">
-          <div className="mx-auto max-w-4xl text-center">
-            <h1 className="text-[56px] font-medium leading-tight tracking-tight">
-              AI comment generator
-            </h1>
-          </div>
-
+        <section id="generator">
+          <div className="mx-auto max-w-4xl text-center"></div>
           <div className="mx-auto mt-12 max-w-4xl rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8">
             <h2 className="text-center text-xl font-medium">What post do you want to reply to?</h2>
             <textarea

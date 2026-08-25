@@ -119,12 +119,8 @@ function HashtagGeneratorPage() {
       <main>
         {/* Hero + generator */}
         <section id="generator">
-          <div className="mx-auto max-w-6xl px-5 pb-20 pt-16 md:pt-24">
-            <div className="mx-auto max-w-4xl text-center">
-              <h1 className="text-[56px] font-medium leading-[1.05] text-foreground">
-                TikTok hashtag generator
-              </h1>
-            </div>
+          <div className="mx-auto max-w-6xl ">
+            <div className="mx-auto max-w-4xl text-center"></div>
 
             {/* Composer */}
             <div className="mx-auto mt-10 max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
@@ -247,122 +243,6 @@ function HashtagGeneratorPage() {
                 </div>
               </div>
             )}
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section id="how">
-          <div className="mx-auto max-w-6xl px-5 py-20">
-            <div className="max-w-xl">
-              <h2 className="text-[32px] font-medium">From hashtags to published</h2>
-            </div>
-            <ol className="mt-10 grid gap-6 md:grid-cols-3">
-              {[
-                {
-                  n: "01",
-                  title: "Describe your video",
-                  body: "Tell us what your video is about.",
-                },
-                {
-                  n: "02",
-                  title: "Generate",
-                  body: "With one click, generate engaging, TikTok-ready hashtag suggestions for your content.",
-                },
-                {
-                  n: "03",
-                  title: "Publish",
-                  body: "Post from real GeeLark cloud phones — every TikTok account on its own Android device.",
-                },
-              ].map((s) => (
-                <li
-                  key={s.n}
-                  className="rounded-[var(--radius-xl)] border border-border bg-card p-6 shadow-[var(--shadow-soft)]"
-                >
-                  <span className="font-display text-sm font-bold text-primary">{s.n}</span>
-                  <h3 className="mt-3 text-[22px] font-semibold">{s.title}</h3>
-                  <p className="mt-2 text-[16px] text-muted-foreground">{s.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <SeoArticle />
-
-        {/* FAQ */}
-        <section id="faq">
-          <div className="mx-auto max-w-3xl px-5 py-20">
-            <h2 className="text-3xl font-medium md:text-4xl">Frequently asked questions</h2>
-            <Accordion type="single" collapsible className="mt-8">
-              {[
-                {
-                  q: "Do hashtags still work on TikTok?",
-                  a: "Yes. Hashtags are a key way TikTok surfaces content to viewers. They help with discovery, increase your chances of appearing on the For You Page, and signal your content's topic to the algorithm.",
-                },
-                {
-                  q: "How many hashtags should I use on TikTok?",
-                  a: "Most creators use 3–5 hashtags per post. It's better to choose targeted, relevant hashtags than to overload your caption with generic or unrelated ones.",
-                },
-                {
-                  q: "Are these hashtags based on real posting trends?",
-                  a: "Hashtags are built from common TikTok usage patterns rather than live TikTok data. They're designed to suggest relevant, high-performing tags across popular and niche content. For even better results, review the list and combine it with any specific hashtags you know perform well in your space.",
-                },
-                {
-                  q: "Is this really free?",
-                  a: "Yes, 100%. No sign-up and no catch. You only create a GeeLark account when you want to publish from cloud phones.",
-                },
-                {
-                  q: "Can I use this for TikTok business accounts?",
-                  a: "Absolutely. Whether you're a creator, brand, or small business, this tool is designed to help you grow on TikTok with better hashtags.",
-                },
-                {
-                  q: "Where should I put hashtags — caption or comments?",
-                  a: "Put them in the caption. TikTok reads the caption when classifying your video, and hashtags added later in a comment carry far less weight for discovery.",
-                },
-                {
-                  q: "Should I use trending hashtags that aren't related to my video?",
-                  a: "No. Irrelevant trending tags attract viewers who swipe away quickly, which sends a negative signal. Only use a trend when your video genuinely fits it.",
-                },
-                {
-                  q: "How do I know if my hashtags are working?",
-                  a: "Check the analytics for each video: traffic sources, search queries, and average watch time. Change one part of your hashtag set at a time so you can attribute the difference.",
-                },
-                {
-                  q: "Can I reuse the same hashtag set on every video?",
-                  a: "Keep two or three evergreen tags for your niche, but swap the rest to match each video's specific topic. Identical blocks on every upload make your content harder to differentiate.",
-                },
-                {
-                  q: "Do hashtags help older videos get more views?",
-                  a: "They can. TikTok resurfaces older videos through search and topic feeds, so accurate hashtags plus a keyword-rich caption keep a video discoverable long after it's posted.",
-                },
-              ].map((item) => (
-                <AccordionItem key={item.q} value={item.q}>
-                  <AccordionTrigger className="text-left text-base">{item.q}</AccordionTrigger>
-                  <AccordionContent className="text-[16px] text-muted-foreground">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </section>
-
-        <MoreTools />
-
-        {/* CTA */}
-        <section className="mx-auto max-w-6xl px-5 py-20">
-          <div className="overflow-hidden rounded-[var(--radius-3xl)] border border-border bg-[image:var(--gradient-primary)] px-8 py-14 text-center shadow-[var(--shadow-lift)]">
-            <h2 className="text-3xl font-medium text-primary-foreground md:text-4xl">
-              Grow your social presence with confidence
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-primary-foreground/85">
-              Spin up your first GeeLark cloud phone in under a minute and publish your next TikTok
-              today.
-            </p>
-            <Button variant="secondary" className="mt-7 rounded-lg px-7 text-[16px]">
-              Start free
-              <ChevronRight className="size-4" />
-            </Button>
           </div>
         </section>
       </main>
