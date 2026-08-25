@@ -121,7 +121,7 @@ function HashtagGeneratorPage() {
     <div className="min-h-screen bg-background text-foreground">
       <main>
         <section id="generator">
-          <div className="mx-auto max-w-6xl px-5 pb-20 pt-16 md:pt-24">
+          <div>
             <div className="mx-auto mt-10 max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
               <div className="rounded-[var(--radius-xl)] bg-card p-4 md:p-5">
                 <h3 className="text-center text-[20px] font-medium">
