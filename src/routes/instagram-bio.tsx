@@ -123,7 +123,7 @@ function InstagramBioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-white text-foreground">
       <main>
         <section id="generator">
           <div>

@@ -191,7 +191,7 @@ function CommentGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <main>
         <section id="generator">
           <div className="mx-auto max-w-4xl text-center"></div>
