@@ -100,7 +100,8 @@ export const Route = createFileRoute("/post-creator")({
 
 function PostCreatorPage() {
   const [topic, setTopic] = useState("");
-  const [platform, setPlatform] = useState<Platform>(PLATFORMS[0] as Platform);
+  // 设计稿无 Platform 选择栏；固定默认平台，仍作为后端请求 / regenerate / 结果标题的输入
+  const platform = PLATFORMS[0] as Platform;
   const [tone, setTone] = useState<Tone>("Friendly");
   const [submitted, setSubmitted] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -190,26 +191,6 @@ function PostCreatorPage() {
                     placeholder="e.g. launching our new multi-account cloud phone plan for TikTok sellers"
                     className="min-h-32 resize-none border-0 bg-muted/60 text-[16px] focus-visible:ring-1"
                   />
-                </div>
-
-                <div className="mt-4">
-                  <div className="text-[14px] font-medium text-foreground">Platform</div>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {PLATFORMS.map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => setPlatform(p)}
-                        className={`rounded-full px-4 py-2 text-[14px] transition-colors ${
-                          platform.id === p.id
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-                        }`}
-                      >
-                        {p.name}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="mt-4">
