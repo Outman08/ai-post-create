@@ -119,9 +119,21 @@
     ),
     linear-gradient(180deg, color-mix(in oklab, var(--primary) 8%, transparent), transparent 55%);
   --gradient-primary: linear-gradient(120deg, oklch(0.62 0.21 258) 0%, oklch(0.66 0.19 250) 100%);
-  --shadow-soft:
-    0 1px 2px oklch(0.17 0.01 270 / 0.06), 0 8px 24px -12px oklch(0.17 0.01 270 / 0.18);
+  --shadow-soft: 0 1px 2px #e5f1ff, 0 8px 24px -12px #e5f1ff;
   --shadow-lift: 0 24px 60px -28px color-mix(in oklab, var(--primary) 45%, transparent);
+}
+
+/* 将 --shadow-* 变量注册为 Tailwind 工具类。
+   Tailwind v4 只对 @theme 中声明的 --shadow-* 自动生成工具类，
+   这里变量定义在 :root，需用 @utility 显式声明，否则 shadow-soft / shadow-lift / shadow-card 不生效。 */
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
 }
 
 .dark {
