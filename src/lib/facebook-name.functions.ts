@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
-import { checkRateLimit } from "./rate-limit.server";
+import { checkRateLimit, RATE_LIMIT_MESSAGE } from "./rate-limit.server";
 
 const Input = z.object({
   description: z.string().min(1).max(500),
@@ -196,8 +196,7 @@ export const generateFacebookNames = createServerFn({ method: "POST" })
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
     const limit = await checkRateLimit("facebook-name", { max: 5, windowSeconds: 60 });
     if (!limit.ok) {
-      const secs = Math.ceil(limit.retryAfterMs / 1000);
-      throw new Error(`Too many requests. Please try again in ${secs}s.`);
+      throw new Error(RATE_LIMIT_MESSAGE);
     }
 
     // 2) 尝试 DeepSeek

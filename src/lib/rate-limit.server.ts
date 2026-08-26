@@ -111,3 +111,6 @@ export const RATE_LIMIT_INFO = {
   max: RATE_LIMIT_MAX,
   windowHours: RATE_LIMIT_WINDOW_S / 3600,
 } as const;
+
+export const RATE_LIMIT_MESSAGE =
+  "You've reached the usage limit for this tool. Please try again later";

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
-import { checkRateLimit } from "./rate-limit.server";
+import { checkRateLimit, RATE_LIMIT_MESSAGE } from "./rate-limit.server";
 import { generateHashtags as generateTemplateHashtags } from "@/components/instagram-hashtag/generator";
 
 const inputSchema = z.object({
@@ -21,8 +21,7 @@ export const generateInstagramHashtags = createServerFn({ method: "POST" })
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
     const limit = await checkRateLimit("instagram-hashtag", { max: 5, windowSeconds: 60 });
     if (!limit.ok) {
-      const secs = Math.ceil(limit.retryAfterMs / 1000);
-      throw new Error(`Too many requests. Please try again in ${secs}s.`);
+      throw new Error(RATE_LIMIT_MESSAGE);
     }
 
     // 2) 检查 DeepSeek API Key

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { checkRateLimit, RATE_LIMIT_INFO } from "./rate-limit.server";
+import { checkRateLimit, RATE_LIMIT_MESSAGE } from "./rate-limit.server";
 
 export type PlatformId = "tiktok" | "instagram" | "x" | "linkedin" | "facebook";
 
@@ -107,11 +107,7 @@ export const generatePosts = createServerFn({ method: "POST" })
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 10 次/小时）
     const limit = await checkRateLimit("post-creator");
     if (!limit.ok) {
-      const secs = Math.ceil(limit.retryAfterMs / 1000);
-      const mins = Math.ceil(secs / 60);
-      throw new Error(
-        `已达到使用限制！每小时最多生成${RATE_LIMIT_INFO.max}次，请${mins}分钟后再试。`,
-      );
+      throw new Error(RATE_LIMIT_MESSAGE);
     }
 
     const platform = PLATFORMS.find((p) => p.id === data.platformId) || PLATFORMS[0]!;

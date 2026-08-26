@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
-import { checkRateLimit } from "./rate-limit.server";
+import { checkRateLimit, RATE_LIMIT_MESSAGE } from "./rate-limit.server";
 
 const inputSchema = z.object({
   topic: z.string().min(3).max(500),

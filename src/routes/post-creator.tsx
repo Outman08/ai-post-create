@@ -130,7 +130,11 @@ function PostCreatorPage() {
         setIsTemplate(result.isTemplate || false);
       } catch (error) {
         console.error("生成帖子时出错：", error);
-        alert(error instanceof Error ? error.message : "生成失败，请重试");
+        alert(
+          error instanceof Error
+            ? `Usage limit reached\n\n${error.message}`
+            : "Usage limit reached",
+        );
       } finally {
         setLoading(false);
       }

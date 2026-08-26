@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Copy, Check, Sparkles, RefreshCw } from "lucide-react";
+import { Copy, Check, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { generateFacebookNames } from "@/lib/facebook-name.functions";
 import { copyToClipboard } from "@/lib/utils";
 
@@ -560,9 +561,11 @@ export function NameGenerator() {
           </Button>
 
           {mutation.isError && (
-            <p className="mt-4 text-center text-sm text-destructive">
-              {(mutation.error as Error).message}
-            </p>
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Usage limit reached</AlertTitle>
+              <AlertDescription>{(mutation.error as Error).message}</AlertDescription>
+            </Alert>
           )}
         </form>
       </div>

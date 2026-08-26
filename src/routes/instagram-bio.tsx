@@ -3,9 +3,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useIframeHeight } from "@/hooks/use-iframe-height";
-import { Sparkles, Copy, Check, RefreshCw, ChevronRight } from "lucide-react";
+import { Sparkles, Copy, Check, RefreshCw, ChevronRight, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
@@ -80,6 +81,7 @@ function InstagramBioPage() {
   const [isTemplate, setIsTemplate] = useState(false);
   const [copied, setCopied] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fn = useServerFn(generateBios);
   const mutation = useMutation({
@@ -87,6 +89,10 @@ function InstagramBioPage() {
     onSuccess: (data) => {
       setResults(data.bios);
       setIsTemplate(data.isTemplate || false);
+      setErrorMsg(null);
+    },
+    onError: (err) => {
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     },
   });
 
@@ -184,6 +190,14 @@ function InstagramBioPage() {
                   )}
                   {mutation.isPending ? "Creating bios…" : "Create me a bio"}
                 </Button>
+
+                {errorMsg && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Usage limit reached</AlertTitle>
+                    <AlertDescription>{errorMsg}</AlertDescription>
+                  </Alert>
+                )}
               </form>
             </div>
 

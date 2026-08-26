@@ -3,9 +3,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useIframeHeight } from "@/hooks/use-iframe-height";
-import { Sparkles, Copy, Check, RefreshCw, Hash, ChevronRight } from "lucide-react";
+import { Sparkles, Copy, Check, RefreshCw, Hash, ChevronRight, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
@@ -152,9 +153,11 @@ function HashtagGeneratorPage() {
                 </div>
 
                 {mutation.isError && (
-                  <p className="mt-3 text-center text-sm text-destructive">
-                    {(mutation.error as Error).message}
-                  </p>
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Usage limit reached</AlertTitle>
+                    <AlertDescription>{(mutation.error as Error).message}</AlertDescription>
+                  </Alert>
                 )}
 
                 <p className="mt-3 text-center text-[16px] text-muted-foreground">

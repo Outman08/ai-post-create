@@ -13,8 +13,9 @@ import {
   Copy,
   Smartphone,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
-
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { generateHooks, type GeneratedHook } from "@/lib/hooks.functions";
 import { cn, copyToClipboard } from "@/lib/utils";
 
@@ -274,9 +275,11 @@ function HookGeneratorPage() {
             </p>
 
             {mutation.isError && (
-              <p className="mt-4 text-center text-sm text-destructive">
-                {(mutation.error as Error).message}
-              </p>
+              <Alert variant="destructive" className="mt-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Usage limit reached</AlertTitle>
+                <AlertDescription>{(mutation.error as Error).message}</AlertDescription>
+              </Alert>
             )}
 
             {hooks.length > 0 && (

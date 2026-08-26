@@ -11,7 +11,9 @@ import {
   ArrowUpRight,
   ChevronLeft,
   PanelBottom,
+  AlertCircle,
 } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { generateComments } from "@/lib/comments.functions";
 import { cn, copyToClipboard } from "@/lib/utils";
 import {
@@ -231,9 +233,13 @@ function CommentGenerator() {
             </p>
 
             {mutation.isError && (
-              <p className="mt-4 rounded-xl bg-destructive/10 p-3 text-center text-sm text-destructive">
-                {(mutation.error as Error).message || "Something went wrong. Try again."}
-              </p>
+              <Alert variant="destructive" className="mt-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Usage limit reached</AlertTitle>
+                <AlertDescription>
+                  {(mutation.error as Error).message || "Something went wrong. Try again."}
+                </AlertDescription>
+              </Alert>
             )}
 
             {mutation.data && (

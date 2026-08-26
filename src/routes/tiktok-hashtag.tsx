@@ -3,9 +3,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useIframeHeight } from "@/hooks/use-iframe-height";
-import { Sparkles, Copy, Check, RefreshCw, Hash, ArrowUpRight, ChevronRight } from "lucide-react";
+import {
+  Sparkles,
+  Copy,
+  Check,
+  RefreshCw,
+  Hash,
+  ArrowUpRight,
+  ChevronRight,
+  AlertCircle,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
@@ -75,10 +85,14 @@ export const Route = createFileRoute("/tiktok-hashtag")({
 function HashtagGeneratorPage() {
   const [topic, setTopic] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fn = useServerFn(generateTikTokHashtags);
   const mutation = useMutation({
     mutationFn: (vars: { topic: string }) => fn({ data: vars }),
+    onSuccess: () => setErrorMsg(null),
+    onError: (err) =>
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again."),
   });
 
   const groups = mutation.data?.groups ?? [];
@@ -150,6 +164,13 @@ function HashtagGeneratorPage() {
                       {mutation.isPending ? "Generating…" : "Generate hashtags"}
                     </Button>
                   </div>
+                  {errorMsg && (
+                    <Alert variant="destructive" className="mt-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Usage limit reached</AlertTitle>
+                      <AlertDescription>{errorMsg}</AlertDescription>
+                    </Alert>
+                  )}
                 </div>
 
                 <p className="mt-3 text-center text-[16px] text-muted-foreground">

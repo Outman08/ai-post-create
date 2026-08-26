@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
-import { checkRateLimit } from "./rate-limit.server";
+import { checkRateLimit, RATE_LIMIT_MESSAGE } from "./rate-limit.server";
 
 const Input = z.object({
   description: z.string().min(1).max(500),
@@ -65,9 +65,7 @@ export const generateBios = createServerFn({ method: "POST" })
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 10 次/小时）
     const limit = await checkRateLimit("instagram-bio", { max: 10, windowSeconds: 3600 });
     if (!limit.ok) {
-      const secs = Math.ceil(limit.retryAfterMs / 1000);
-      const mins = Math.ceil(secs / 60);
-      throw new Error(`已达到使用限制！每小时最多生成 10 次，请${mins}分钟后再试。`);
+      throw new Error(RATE_LIMIT_MESSAGE);
     }
 
     // 2) 尝试 DeepSeek
