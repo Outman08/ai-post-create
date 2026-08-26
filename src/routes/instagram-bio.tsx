@@ -18,6 +18,7 @@ import { generateBios } from "@/lib/instagram-bio.functions";
 import { SeoArticle } from "@/components/instagram-bio/seo-article";
 import { MoreTools } from "@/components/instagram-bio/more-tools";
 import { copyToClipboard } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 const TITLE = "Free Instagram Bio Generator | GeeLark";
 const DESCRIPTION =
@@ -127,33 +128,37 @@ function InstagramBioPage() {
       <main>
         <section id="generator">
           <div>
-            <div className="mx-auto max-w-5xl rounded-[var(--radius-2xl)] border border-border bg-card p-2 shadow-[var(--shadow-lift)]">
-              <div className="rounded-[var(--radius-xl)] bg-card p-4 md:p-5">
-                <h3 className="text-center text-[20px] font-medium">
-                  Describe yourself or your account
-                </h3>
-                <div className="mt-3">
+            <div className="mx-auto max-w-4xl rounded-xl border border-border p-6 shadow-soft sm:p-8">
+              <form
+                className="grid gap-5"
+                onSubmit={(ev) => {
+                  ev.preventDefault();
+                  run();
+                }}
+              >
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Describe yourself</Label>
                   <Textarea
                     id="description"
+                    rows={4}
+                    placeholder="Mia Reyes — pilates coach helping busy moms with mobility and 10-minute workouts"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Tell us about yourself, what you do, who you help, or what your account is about"
-                    className="min-h-32 resize-none border-0 bg-muted/60 text-[16px] focus-visible:ring-1"
+                    onChange={(ev) => setDescription(ev.target.value)}
                   />
                 </div>
 
-                <div className="mt-4">
-                  <div className="text-[14px] font-medium text-foreground">Choose a tone</div>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                <div className="grid gap-3">
+                  <Label>Tone</Label>
+                  <div className="flex flex-wrap gap-2">
                     {TONES.map((t) => (
                       <button
                         key={t}
                         type="button"
                         onClick={() => setTone(t)}
-                        className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
+                        className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
                           tone === t
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                            ? "border-transparent bg-primary text-primary-foreground hover:bg-primary/90"
+                            : "border-border bg-background text-muted-foreground hover:bg-accent"
                         }`}
                       >
                         {t}
@@ -162,32 +167,24 @@ function InstagramBioPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex justify-center">
-                  <Button
-                    onClick={run}
-                    disabled={!description.trim() || mutation.isPending}
-                    className="rounded-lg px-6"
-                  >
-                    {mutation.isPending ? (
-                      <RefreshCw className="size-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="size-4" />
-                    )}
-                    {mutation.isPending ? "Generating bios…" : "Create me a bio"}
-                  </Button>
-                </div>
-
-                {mutation.isError && (
-                  <p className="mt-3 text-center text-sm text-destructive">
-                    {(mutation.error as Error).message}
-                  </p>
-                )}
-
-                <p className="mt-3 text-center text-[16px] text-muted-foreground">
-                  <span className="font-semibold text-foreground">Pro tip:</span>
-                  The more specific you are, the more tailored your bio options will be.
-                </p>
-              </div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={!description.trim() || mutation.isPending}
+                  className={`w-full justify-center gap-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+                    description.trim()
+                      ? "bg-[#3B82F6] hover:bg-[#2563EB]"
+                      : "bg-[#93C5FD] hover:bg-[#93C5FD]/90"
+                  }`}
+                >
+                  {mutation.isPending ? (
+                    <RefreshCw className="size-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="size-4" />
+                  )}
+                  {mutation.isPending ? "Creating bios…" : "Create me a bio"}
+                </Button>
+              </form>
             </div>
 
             {mutation.data && !mutation.isPending && (
