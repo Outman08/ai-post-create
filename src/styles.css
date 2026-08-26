@@ -61,6 +61,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-primary-glow: var(--primary-glow);
   --color-ink: var(--ink);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-surface: var(--surface);
+  --shadow-card: 0 1px 2px oklch(0.2 0.02 260 / 0.04), 0 12px 32px oklch(0.2 0.02 260 / 0.06);
   --font-display: "Golos Text", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Golos Text", ui-sans-serif, system-ui, sans-serif;
 }
@@ -76,6 +81,10 @@
   --primary: oklch(0.62 0.21 258);
   --primary-foreground: oklch(0.99 0 0);
   --primary-glow: oklch(0.72 0.15 250);
+  --brand: oklch(0.605 0.213 256);
+  --brand-foreground: oklch(1 0 0);
+  --brand-soft: oklch(0.955 0.025 255);
+  --surface: oklch(0.985 0.004 250);
   --secondary: oklch(0.965 0.003 260);
   --secondary-foreground: oklch(0.28 0.012 270);
   --muted: oklch(0.965 0.003 260);
