@@ -188,7 +188,7 @@ function InstagramBioPage() {
             </div>
 
             {mutation.data && !mutation.isPending && (
-              <div className="mx-auto mt-14 max-w-5xl">
+              <div className="mx-auto mt-14 max-w-4xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <h2 className="text-xl font-semibold">Your bio options</h2>
