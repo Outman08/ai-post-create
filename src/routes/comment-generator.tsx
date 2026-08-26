@@ -3,7 +3,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useIframeHeight } from "@/hooks/use-iframe-height";
-import { Check, Copy, Sparkles, ArrowRight, ArrowUpRight, ChevronLeft } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Sparkles,
+  ArrowRight,
+  ArrowUpRight,
+  ChevronLeft,
+  PanelBottom,
+} from "lucide-react";
 import { generateComments } from "@/lib/comments.functions";
 import { cn, copyToClipboard } from "@/lib/utils";
 import {
@@ -191,7 +199,7 @@ function CommentGenerator() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white" style={{ paddingBottom: "40px" }}>
       <main>
         <section id="generator">
           <div className="mx-auto max-w-4xl text-center"></div>

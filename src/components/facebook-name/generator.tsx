@@ -450,6 +450,7 @@ export function NameGenerator() {
 
   return (
     <div className="mx-auto grid w-full max-w-4xl gap-6">
+      {/* 表单卡：仅包含输入字段与 Generate 按钮 */}
       <div className="rounded-xl border border-border p-6 shadow-soft sm:p-8">
         <form
           className="grid gap-5"
@@ -564,47 +565,48 @@ export function NameGenerator() {
             </p>
           )}
         </form>
-
-        {results !== null && (
-          <div className="grid content-start gap-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                {results.length} name ideas ready to copy
-                <span className="ml-2 inline-block rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-accent-foreground">
-                  {isAI ? "✨ AI generated" : "📋 Template fallback"}
-                </span>
-              </p>
-              <Button variant="outline" size="sm" onClick={() => generate()}>
-                <RefreshCw /> Regenerate
-              </Button>
-            </div>
-            {results.map((name, i) => {
-              const length = name.length;
-              const url = vanityUrl(name);
-              return (
-                <div
-                  key={i}
-                  className="rounded-xl border border-border p-5 shadow-soft transition-shadow hover:shadow-lift"
-                >
-                  <p className="text-[17px] font-semibold leading-relaxed">{name}</p>
-                  <p className="mt-2 font-mono text-xs text-muted-foreground">{url}</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span
-                      className={`text-xs ${length > 75 ? "text-destructive" : "text-muted-foreground"}`}
-                    >
-                      {length}/75 characters
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={() => copy(name, i)}>
-                      {copied === i ? <Check /> : <Copy />}
-                      {copied === i ? "Copied" : "Copy"}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
+
+      {/* 结果区：与表单卡分开的独立区块；只包含头部行 + 每条结果子卡（不再用大壳卡包裹） */}
+      {results !== null && (
+        <div className="grid content-start gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {results.length} name ideas ready to copy
+              <span className="ml-2 inline-block rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-accent-foreground">
+                {isAI ? "✨ AI generated" : "📋 Template fallback"}
+              </span>
+            </p>
+            <Button variant="outline" size="sm" onClick={() => generate()}>
+              <RefreshCw /> Regenerate
+            </Button>
+          </div>
+          {results.map((name, i) => {
+            const length = name.length;
+            const url = vanityUrl(name);
+            return (
+              <div
+                key={i}
+                className="rounded-xl border border-border p-5 shadow-soft transition-shadow hover:shadow-lift"
+              >
+                <p className="text-[17px] font-semibold leading-relaxed">{name}</p>
+                <p className="mt-2 font-mono text-xs text-muted-foreground">{url}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span
+                    className={`text-xs ${length > 75 ? "text-destructive" : "text-muted-foreground"}`}
+                  >
+                    {length}/75 characters
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => copy(name, i)}>
+                    {copied === i ? <Check /> : <Copy />}
+                    {copied === i ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
