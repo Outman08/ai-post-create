@@ -208,7 +208,7 @@ function HookGeneratorPage() {
       `}</style>
 
       <main>
-        <section id="generator" className="px-5 pb-16 pt-4">
+        <section id="generator">
           <div className="mx-auto max-w-3xl text-center"></div>
 
           <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-border bg-card p-6 shadow-card md:p-8">
