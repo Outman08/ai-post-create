@@ -193,7 +193,7 @@ function CommentGenerator() {
   return (
     <div className="bg-white">
       <main>
-        <section id="generator">
+        <section id="generator" className="pb-5">
           <div className="mx-auto max-w-4xl text-center"></div>
           <div className="mx-auto mt-12 max-w-4xl rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8">
             <h2 className="text-center text-xl font-medium">What post do you want to reply to?</h2>
