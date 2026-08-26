@@ -115,7 +115,7 @@ function HashtagGeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-foreground">
+    <div className="bg-white text-foreground" style={{ paddingBottom: "40px" }}>
       <main>
         {/* Hero + generator */}
         <section id="generator">

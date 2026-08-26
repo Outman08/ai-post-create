@@ -208,7 +208,7 @@ function HookGeneratorPage() {
       `}</style>
 
       <main>
-        <section id="generator">
+        <section id="generator" style={{ paddingBottom: "40px" }}>
           <div className="mx-auto max-w-3xl text-center"></div>
 
           <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-border bg-card p-6 shadow-card md:p-8">
@@ -287,7 +287,10 @@ function HookGeneratorPage() {
                     className="flex items-start gap-3 rounded-2xl border border-border bg-secondary/60 p-4"
                   >
                     <div className="min-w-0 flex-1">
-                      <span className="inline-block rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-accent-foreground">
+                      <span
+                        style={{ backgroundColor: "#e4f1ff" }}
+                        className="inline-block rounded-full px-2.5 py-1 text-xs font-semibold text-accent-foreground"
+                      >
                         {h.framework}
                       </span>
                       <p className="mt-2 text-[15px] font-medium leading-snug">{h.hook}</p>
