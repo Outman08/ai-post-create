@@ -118,7 +118,7 @@ function HashtagGeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-foreground">
+    <div className="bg-white text-foreground">
       <main>
         <section id="generator">
           <div>
