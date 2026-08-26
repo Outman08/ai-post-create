@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
+import { checkRateLimit } from "./rate-limit.server";
+
 const Input = z.object({
   description: z.string().min(1).max(500),
   tone: z.string().min(1).max(40),
@@ -11,26 +13,6 @@ const Input = z.object({
 const Schema = z.object({
   bios: z.array(z.string()),
 });
-
-// ── 全局实例限流（10 次 / 小时）──────────────────────────────────────
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1小时
-const RATE_LIMIT_MAX = 10;
-const globalHits: number[] = [];
-
-function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
-  const now = Date.now();
-  const freshHits = globalHits.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  globalHits.length = 0;
-  globalHits.push(...freshHits);
-
-  if (globalHits.length >= RATE_LIMIT_MAX) {
-    const oldest = globalHits[0]!;
-    return { ok: false, retryAfterMs: RATE_LIMIT_WINDOW_MS - (now - oldest) };
-  }
-
-  globalHits.push(now);
-  return { ok: true };
-}
 
 // 模板 fallback
 const EMOJI: Record<string, string[]> = {
@@ -80,12 +62,12 @@ function buildTemplateBios(
 export const generateBios = createServerFn({ method: "POST" })
   .validator((data: unknown) => Input.parse(data))
   .handler(async ({ data }) => {
-    // 1) 限流检查
-    const limit = checkRateLimit();
+    // 1) 限流检查（基于 Upstash Redis，按 IP 维度 10 次/小时）
+    const limit = await checkRateLimit("instagram-bio", { max: 10, windowSeconds: 3600 });
     if (!limit.ok) {
       const secs = Math.ceil(limit.retryAfterMs / 1000);
       const mins = Math.ceil(secs / 60);
-      throw new Error(`已达到使用限制！每小时最多生成${RATE_LIMIT_MAX}次，请${mins}分钟后再试。`);
+      throw new Error(`已达到使用限制！每小时最多生成 10 次，请${mins}分钟后再试。`);
     }
 
     // 2) 尝试 DeepSeek

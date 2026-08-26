@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
+import { checkRateLimit } from "./rate-limit.server";
+
 const inputSchema = z.object({
   topic: z.string().min(3).max(500),
   style: z.string().min(2).max(60),
@@ -10,33 +12,11 @@ const inputSchema = z.object({
 
 export type GeneratedHook = { framework: string; hook: string };
 
-// ── 全局实例限流（5 次 / 分钟）──────────────────────────────────────
-// 说明：Vercel Serverless 是无状态的，每个实例独立计数，
-// 能挡住同一实例短时间内的快速刷量，对免费小工具够用。
-const RATE_LIMIT_WINDOW_MS = 60000;
-const RATE_LIMIT_MAX = 5;
-const globalHits: number[] = [];
-
-function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
-  const now = Date.now();
-  const freshHits = globalHits.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  globalHits.length = 0;
-  globalHits.push(...freshHits);
-
-  if (globalHits.length >= RATE_LIMIT_MAX) {
-    const oldest = globalHits[0]!;
-    return { ok: false, retryAfterMs: RATE_LIMIT_WINDOW_MS - (now - oldest) };
-  }
-
-  globalHits.push(now);
-  return { ok: true };
-}
-
 export const generateHooks = createServerFn({ method: "POST" })
   .validator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<{ hooks: GeneratedHook[] }> => {
-    // 1) 限流检查（在消耗 DeepSeek 额度之前拦截）
-    const limit = checkRateLimit();
+    // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
+    const limit = await checkRateLimit("tiktok-hook", { max: 5, windowSeconds: 60 });
     if (!limit.ok) {
       const secs = Math.ceil(limit.retryAfterMs / 1000);
       throw new Error(`Too many requests. Please try again in ${secs}s.`);

@@ -54,7 +54,7 @@ return {count, redis.call('TTL', KEYS[1])}
 `;
 
 /**
- * 基于 Upstash Redis 的 IP 维度限流（10 次 / 小时 / IP）。
+ * 基于 Upstash Redis 的 IP 维度限流。
  *
  * 实现要点：
  * 1. 用 lua 脚本在 Redis 服务端原子完成 INCR + 条件 EXPIRE + 取 TTL，
@@ -67,15 +67,20 @@ return {count, redis.call('TTL', KEYS[1])}
  * @param scope 限流命名空间，例如 "post-creator"。不同 AI 页面应使用
  *              不同 scope，避免互相挤占额度（用户在 A 页用满 10 次
  *              不应影响 B 页）。
+ * @param options 可选的自定义限流参数，未传则使用默认值（10 次/小时）。
  */
 export async function checkRateLimit(
   scope: string,
+  options?: { max?: number; windowSeconds?: number },
 ): Promise<{ ok: true } | { ok: false; retryAfterMs: number }> {
   const redis = getRedis();
   if (!redis) return { ok: true };
 
   const ip = getClientIp();
   const key = `rl:${scope}:${ip}`;
+
+  const max = options?.max ?? RATE_LIMIT_MAX;
+  const windowSeconds = options?.windowSeconds ?? RATE_LIMIT_WINDOW_S;
 
   let result: [number, number];
   try {
@@ -84,7 +89,7 @@ export async function checkRateLimit(
     const raw = await redis.eval<[string], [number, number]>(
       RATE_LIMIT_LUA,
       [key],
-      [String(RATE_LIMIT_WINDOW_S)],
+      [String(windowSeconds)],
     );
     result = raw;
   } catch (err) {
@@ -93,9 +98,9 @@ export async function checkRateLimit(
   }
 
   const [count, ttl] = result;
-  if (count > RATE_LIMIT_MAX) {
-    // ttl 为 -1 表示 key 无过期（理论上不会发生），回退 1 小时
-    const retryAfterMs = ttl > 0 ? ttl * 1000 : RATE_LIMIT_WINDOW_S * 1000;
+  if (count > max) {
+    // ttl 为 -1 表示 key 无过期（理论上不会发生），回退到窗口时长
+    const retryAfterMs = ttl > 0 ? ttl * 1000 : windowSeconds * 1000;
     return { ok: false, retryAfterMs };
   }
 

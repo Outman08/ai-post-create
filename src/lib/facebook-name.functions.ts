@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
+import { checkRateLimit } from "./rate-limit.server";
+
 const Input = z.object({
   description: z.string().min(1).max(500),
   accountType: z.string().min(1).max(40),
@@ -13,26 +15,6 @@ const Input = z.object({
 const Schema = z.object({
   names: z.array(z.string()),
 });
-
-// ── 全局实例限流（5 次 / 分钟）──────────────────────────────────────
-const RATE_LIMIT_WINDOW_MS = 60000;
-const RATE_LIMIT_MAX = 5;
-const globalHits: number[] = [];
-
-function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
-  const now = Date.now();
-  const freshHits = globalHits.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  globalHits.length = 0;
-  globalHits.push(...freshHits);
-
-  if (globalHits.length >= RATE_LIMIT_MAX) {
-    const oldest = globalHits[0]!;
-    return { ok: false, retryAfterMs: RATE_LIMIT_WINDOW_MS - (now - oldest) };
-  }
-
-  globalHits.push(now);
-  return { ok: true };
-}
 
 // 模板 fallback（复用原来的逻辑）
 const LOCATIONS = [
@@ -211,8 +193,8 @@ function capitalizeFirst(str: string): string {
 export const generateFacebookNames = createServerFn({ method: "POST" })
   .validator((data: unknown) => Input.parse(data))
   .handler(async ({ data }) => {
-    // 1) 限流检查
-    const limit = checkRateLimit();
+    // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
+    const limit = await checkRateLimit("facebook-name", { max: 5, windowSeconds: 60 });
     if (!limit.ok) {
       const secs = Math.ceil(limit.retryAfterMs / 1000);
       throw new Error(`Too many requests. Please try again in ${secs}s.`);

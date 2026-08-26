@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 
+import { checkRateLimit } from "./rate-limit.server";
 import { generateHashtags as generateTemplateHashtags } from "@/components/tiktok-hashtag/generator";
 
 const inputSchema = z.object({
@@ -14,31 +15,11 @@ export type HashtagGroup = {
   tags: string[];
 };
 
-// ── 全局实例限流（5 次 / 分钟）──────────────────────────────────────
-const RATE_LIMIT_WINDOW_MS = 60000;
-const RATE_LIMIT_MAX = 5;
-const globalHits: number[] = [];
-
-function checkRateLimit(): { ok: true } | { ok: false; retryAfterMs: number } {
-  const now = Date.now();
-  const freshHits = globalHits.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  globalHits.length = 0;
-  globalHits.push(...freshHits);
-
-  if (globalHits.length >= RATE_LIMIT_MAX) {
-    const oldest = globalHits[0]!;
-    return { ok: false, retryAfterMs: RATE_LIMIT_WINDOW_MS - (now - oldest) };
-  }
-
-  globalHits.push(now);
-  return { ok: true };
-}
-
 export const generateTikTokHashtags = createServerFn({ method: "POST" })
   .validator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<{ groups: HashtagGroup[]; isAI: boolean }> => {
-    // 1) 限流检查
-    const limit = checkRateLimit();
+    // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
+    const limit = await checkRateLimit("tiktok-hashtag", { max: 5, windowSeconds: 60 });
     if (!limit.ok) {
       const secs = Math.ceil(limit.retryAfterMs / 1000);
       throw new Error(`Too many requests. Please try again in ${secs}s.`);

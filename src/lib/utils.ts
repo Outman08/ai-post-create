@@ -9,10 +9,14 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     const trimmedText = text.trim();
 
-    // Method 1: Modern Clipboard API (requires secure context)
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(trimmedText);
-      return true;
+    // Method 1: Modern Clipboard API
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(trimmedText);
+        return true;
+      } catch {
+        // clipboard API 不可用，继续尝试其他方法
+      }
     }
 
     // Method 2: Fallback using execCommand
@@ -31,7 +35,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     // Method 3: If in iframe, ask parent window to copy
     if (window.parent !== window) {
       window.parent.postMessage({ type: "copy-to-clipboard", text: trimmedText }, "*");
-      return true;
     }
 
     return false;
@@ -40,7 +43,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     // Last resort: try parent window
     if (window.parent !== window) {
       window.parent.postMessage({ type: "copy-to-clipboard", text: text.trim() }, "*");
-      return true;
     }
     return false;
   }
