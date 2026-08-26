@@ -20,16 +20,19 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     }
 
     // Method 2: Fallback using execCommand
+    // 避免 focus()/select() 把 iframe 页面滚动到顶部：用只读选区 + 复制后恢复滚动位置
+    const savedScrollY = window.scrollY;
     const textArea = document.createElement("textarea");
+    textArea.readOnly = true;
     textArea.value = trimmedText;
     textArea.style.position = "fixed";
     textArea.style.left = "-999999px";
     textArea.style.top = "-999999px";
     document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
+    textArea.setSelectionRange(0, textArea.value.length);
     const success = document.execCommand("copy");
     document.body.removeChild(textArea);
+    if (window.scrollY !== savedScrollY) window.scrollTo(0, savedScrollY);
     if (success) return true;
 
     // Method 3: If in iframe, ask parent window to copy
