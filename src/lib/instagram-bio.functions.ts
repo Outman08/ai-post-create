@@ -81,17 +81,23 @@ export const generateBios = createServerFn({ method: "POST" })
           model: deepseek("deepseek-chat"),
           system: `You are a professional Instagram bio generator. Generate ${data.count} high-quality Instagram bios.
 
-CRITICAL RULES:
-1. Each bio must be suitable for Instagram (max 150 characters)
-2. Tone must be ${data.tone}
-3. Include relevant emojis
-4. Make it engaging and personal
-5. Separate each bio with exactly "---BIO_SEPARATOR---"
-6. Do not use JSON, no arrays, no code blocks
-7. Keep within 150 characters per bio
-8. No extra text before or after the bios
-9. Each bio should have line breaks where appropriate for readability`,
-          prompt: `Generate ${data.count} ${data.tone} Instagram bios based on this description: "${data.description}". Separate each bio with exactly "---BIO_SEPARATOR---".`,
+CRITICAL RULES — VIOLATION IS A FAILURE:
+1. HARD LIMIT: each bio MUST be at most 150 characters total (count everything: letters, numbers, spaces, emojis, punctuation, line breaks). Anything over 150 will be rejected. Aim for 100–140 characters.
+2. Count carefully. Example: "✨ Creator sharing daily tips\n🌈 Good vibes only" = 47 characters.
+3. Tone must be ${data.tone}
+4. Use at most 2 short lines per bio (one \n break max). No more.
+5. Include 1–3 relevant emojis. Do not over-emojify.
+6. Be specific to the description. No generic filler.
+7. Make each bio distinct — different angle, opening, or structure.
+8. Separate each bio with exactly "---BIO_SEPARATOR---"
+9. Output ONLY the bios. No preamble, no labels, no numbering, no code fences.`,
+          prompt: `Generate exactly ${data.count} ${data.tone} Instagram bios for this description: "${data.description}"
+
+Constraints reminder:
+- EACH bio ≤ 150 characters (hard limit, this is Instagram's bio max)
+- One \n line break max per bio
+- Separate bios with exactly "---BIO_SEPARATOR---"
+- Output only the bios, nothing else.`,
           temperature: 0.7,
         });
 
