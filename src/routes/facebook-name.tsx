@@ -135,7 +135,7 @@ function FacebookNamePage() {
   useIframeHeight();
 
   return (
-    <div className="min-h-screen bg-white text-foreground">
+    <div className="bg-white text-foreground">
       <main>
         <section className="relative overflow-hidden"></section>
         <section className="mx-auto max-w-6xl px-5 pb-20">

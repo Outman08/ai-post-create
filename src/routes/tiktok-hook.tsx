@@ -199,7 +199,7 @@ function HookGeneratorPage() {
 
   return (
     <div
-      className="min-h-screen bg-white text-foreground"
+      className="bg-white text-foreground"
       style={{ overflowY: "scroll", scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <style>{`

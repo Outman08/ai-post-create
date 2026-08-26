@@ -87,7 +87,7 @@ function HomePage() {
   useIframeHeight();
 
   return (
-    <div className="bg-white text-foreground min-h-screen">
+    <div className="bg-white text-foreground">
       <main>
         {/* Hero */}
         <section className="">

@@ -172,7 +172,7 @@ function YouTubeBoldPage() {
   useIframeHeight();
 
   return (
-    <div className="min-h-screen font-sans text-foreground bg-white">
+    <div className="font-sans text-foreground bg-white">
       <main>
         <section id="generator" className="mx-auto max-w-6xl px-5 py-5">
           <BoldTextGenerator />
