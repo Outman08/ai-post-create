@@ -179,9 +179,14 @@
   }
 
   body {
-    background-color: var(--color-background);
+    /* 子页面嵌入 iframe，要求整页纯白背景（--background 为浅蓝灰，会透出）
+       深色模式下由下方 .dark body 覆盖 */
+    background-color: #fff;
     color: var(--color-foreground);
     font-family: var(--font-sans);
+  }
+  .dark body {
+    background-color: var(--color-background);
   }
 
   h1,
