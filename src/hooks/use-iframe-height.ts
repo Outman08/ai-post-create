@@ -24,20 +24,11 @@ export function useIframeHeight(deps: any[] = []) {
       );
     }
 
-    // 页面加载、窗口 resize、dom 变化都上报高度
+    // 页面加载、窗口 resize、布局变化时上报高度
     window.addEventListener("load", sendHeight);
     window.addEventListener("resize", sendHeight);
     const observer = new ResizeObserver(sendHeight);
     observer.observe(document.body);
-
-    // 额外的 MutationObserver 确保所有 DOM 变化都触发
-    const mutationObserver = new MutationObserver(sendHeight);
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
-    });
 
     // 初始发送一次
     sendHeight();
@@ -46,7 +37,6 @@ export function useIframeHeight(deps: any[] = []) {
       window.removeEventListener("load", sendHeight);
       window.removeEventListener("resize", sendHeight);
       observer.disconnect();
-      mutationObserver.disconnect();
     };
   }, deps);
 }
