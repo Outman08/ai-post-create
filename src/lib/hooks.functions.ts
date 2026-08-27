@@ -18,8 +18,7 @@ export const generateHooks = createServerFn({ method: "POST" })
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
     const limit = await checkRateLimit("tiktok-hook", { max: 5, windowSeconds: 60 });
     if (!limit.ok) {
-      const secs = Math.ceil(limit.retryAfterMs / 1000);
-      throw new Error(`Too many requests. Please try again in ${secs}s.`);
+      throw new Error(RATE_LIMIT_MESSAGE);
     }
 
     // 2) 调用 DeepSeek
