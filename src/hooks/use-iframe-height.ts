@@ -7,6 +7,16 @@ export function useIframeHeight(deps: any[] = []) {
     document.body.style.overflowY = "visible";
 
     function sendHeight() {
+      // #region debug-point E:send
+      const docEl = document.documentElement.scrollHeight;
+      const body = document.body ? document.body.scrollHeight : -1;
+      const innerH = window.innerHeight;
+      console.log("[iframe-height-loop]", { ts: Date.now(), docEl, body, innerH });
+      window.parent.postMessage(
+        { type: "_dbg", docEl, body, innerH, outerH: window.outerHeight },
+        "*",
+      );
+      // #endregion
       const height = document.documentElement.scrollHeight;
       window.parent.postMessage(
         {

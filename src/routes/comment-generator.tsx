@@ -250,7 +250,7 @@ function CommentGenerator() {
                     className="group rounded-2xl border border-border bg-surface p-4 text-left"
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <p className="text-sm leading-relaxed whitespace-pre-line">{c}</p>
+                      <p className="break-words text-sm leading-relaxed whitespace-pre-line">{c}</p>
                       <button
                         onClick={() => copy(c, i)}
                         aria-label="Copy comment"

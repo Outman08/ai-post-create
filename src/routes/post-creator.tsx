@@ -303,7 +303,7 @@ function PostCreatorPage() {
                             <p className="text-xs text-muted-foreground">{platform.handleLabel}</p>
                           </div>
                         </div>
-                        <p className="mt-4 flex-1 whitespace-pre-line text-sm leading-relaxed">
+                        <p className="mt-4 flex-1 break-words whitespace-pre-line text-sm leading-relaxed">
                           {post}
                         </p>
                         <div className="mt-auto flex items-center gap-5 border-t border-border pt-3 pb-1 text-muted-foreground">

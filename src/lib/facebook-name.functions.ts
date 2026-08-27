@@ -226,7 +226,8 @@ CRITICAL RULES:
 9. No extra text before or after the names
 10. No emojis in the names (keep it clean for Facebook)
 11. For business accounts, include relevant keywords if possible
-12. For personal accounts, keep it professional yet approachable`,
+12. For personal accounts, keep it professional yet approachable
+13. Each generated name must be under 75 characters`,
           prompt: `Generate 8 ${data.tone} Facebook names in ${
             data.style
           } style for a ${data.accountType} account${

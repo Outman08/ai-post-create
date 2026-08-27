@@ -593,7 +593,7 @@ export function NameGenerator() {
                 className="rounded-xl border border-border p-5 shadow-soft transition-shadow hover:shadow-lift"
               >
                 <p className="text-[17px] font-semibold leading-relaxed">{name}</p>
-                <p className="mt-2 font-mono text-xs text-muted-foreground">{url}</p>
+                <p className="mt-2 break-all font-mono text-xs text-muted-foreground">{url}</p>
                 <div className="mt-4 flex items-center justify-between">
                   <span
                     className={`text-xs ${length > 75 ? "text-destructive" : "text-muted-foreground"}`}

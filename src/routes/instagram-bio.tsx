@@ -236,7 +236,9 @@ function InstagramBioPage() {
                         key={i}
                         className="rounded-[var(--radius-xl)] border border-border bg-card p-5 shadow-[var(--shadow-soft)]"
                       >
-                        <p className="whitespace-pre-line text-[15px] leading-relaxed">{bio}</p>
+                        <p className="whitespace-pre-line break-words text-[15px] leading-relaxed">
+                          {bio}
+                        </p>
                         <div className="mt-4 flex items-center justify-between">
                           <span
                             className={`text-xs ${
