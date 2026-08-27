@@ -14,6 +14,7 @@ import {
 import { Copy, Check, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { generateFacebookNames } from "@/lib/facebook-name.functions";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 import { copyToClipboard } from "@/lib/utils";
 
 const ACCOUNT_TYPES = ["Personal", "Business"] as const;
@@ -561,13 +562,24 @@ export function NameGenerator() {
             {mutation.isPending ? "Generating names..." : "Generate name"}
           </Button>
 
-          {mutation.isError && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Usage limit reached</AlertTitle>
-              <AlertDescription>{(mutation.error as Error).message}</AlertDescription>
-            </Alert>
-          )}
+          {mutation.isError &&
+            (() => {
+              const msg = mutation.error instanceof Error ? mutation.error.message : "";
+              const isRateLimit = isErrorCode(msg, ERROR_CODE.RATE_LIMIT);
+              return (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>
+                    {isRateLimit ? "Usage limit reached" : "Something went wrong"}
+                  </AlertTitle>
+                  <AlertDescription>
+                    {isRateLimit
+                      ? stripErrorCode(msg)
+                      : "Please try again. If the problem persists, try again later."}
+                  </AlertDescription>
+                </Alert>
+              );
+            })()}
         </form>
       </div>
 

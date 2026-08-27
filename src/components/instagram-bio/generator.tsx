@@ -44,7 +44,6 @@ export function BioGenerator() {
         setIsTemplate(result.isTemplate || false);
       } catch (error) {
         console.error("生成 bio 时出错：", error);
-        alert(error instanceof Error ? error.message : "生成失败，请重试");
       } finally {
         setLoading(false);
       }

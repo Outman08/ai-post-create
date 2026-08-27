@@ -8,6 +8,7 @@ import { Sparkles, Copy, Check, RefreshCw, ChevronRight, AlertCircle } from "luc
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 import {
   Accordion,
   AccordionContent,
@@ -82,6 +83,7 @@ function InstagramBioPage() {
   const [copied, setCopied] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [errorTitle, setErrorTitle] = useState<string | null>(null);
 
   const fn = useServerFn(generateBios);
   const mutation = useMutation({
@@ -92,7 +94,15 @@ function InstagramBioPage() {
       setErrorMsg(null);
     },
     onError: (err) => {
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      const msg = err instanceof Error ? err.message : "";
+      setErrorTitle(
+        isErrorCode(msg, ERROR_CODE.RATE_LIMIT) ? "Usage limit reached" : "Something went wrong",
+      );
+      setErrorMsg(
+        isErrorCode(msg, ERROR_CODE.RATE_LIMIT)
+          ? stripErrorCode(msg)
+          : "Please try again. If the problem persists, try again later.",
+      );
     },
   });
 
@@ -195,7 +205,7 @@ function InstagramBioPage() {
                 {errorMsg && (
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Usage limit reached</AlertTitle>
+                    <AlertTitle>{errorTitle}</AlertTitle>
                     <AlertDescription>{errorMsg}</AlertDescription>
                   </Alert>
                 )}

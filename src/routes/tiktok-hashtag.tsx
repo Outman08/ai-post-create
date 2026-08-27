@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 import {
   Accordion,
   AccordionContent,
@@ -86,13 +87,23 @@ function HashtagGeneratorPage() {
   const [topic, setTopic] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [errorTitle, setErrorTitle] = useState<string | null>(null);
 
   const fn = useServerFn(generateTikTokHashtags);
   const mutation = useMutation({
     mutationFn: (vars: { topic: string }) => fn({ data: vars }),
     onSuccess: () => setErrorMsg(null),
-    onError: (err) =>
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again."),
+    onError: (err) => {
+      const msg = err instanceof Error ? err.message : "";
+      setErrorTitle(
+        isErrorCode(msg, ERROR_CODE.RATE_LIMIT) ? "Usage limit reached" : "Something went wrong",
+      );
+      setErrorMsg(
+        isErrorCode(msg, ERROR_CODE.RATE_LIMIT)
+          ? stripErrorCode(msg)
+          : "Please try again. If the problem persists, try again later.",
+      );
+    },
   });
 
   const groups = mutation.data?.groups ?? [];
@@ -168,7 +179,7 @@ function HashtagGeneratorPage() {
                   {errorMsg && (
                     <Alert variant="destructive" className="mt-4">
                       <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Usage limit reached</AlertTitle>
+                      <AlertTitle>{errorTitle}</AlertTitle>
                       <AlertDescription>{errorMsg}</AlertDescription>
                     </Alert>
                   )}

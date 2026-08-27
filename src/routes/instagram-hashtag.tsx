@@ -8,6 +8,7 @@ import { Sparkles, Copy, Check, RefreshCw, Hash, ChevronRight, AlertCircle } fro
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 import {
   Accordion,
   AccordionContent,
@@ -150,13 +151,24 @@ function HashtagGeneratorPage() {
                   </div>
                 </div>
 
-                {mutation.isError && (
-                  <Alert variant="destructive" className="mt-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Usage limit reached</AlertTitle>
-                    <AlertDescription>{(mutation.error as Error).message}</AlertDescription>
-                  </Alert>
-                )}
+                {mutation.isError &&
+                  (() => {
+                    const msg = mutation.error instanceof Error ? mutation.error.message : "";
+                    const isRateLimit = isErrorCode(msg, ERROR_CODE.RATE_LIMIT);
+                    return (
+                      <Alert variant="destructive" className="mt-4">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>
+                          {isRateLimit ? "Usage limit reached" : "Something went wrong"}
+                        </AlertTitle>
+                        <AlertDescription>
+                          {isRateLimit
+                            ? stripErrorCode(msg)
+                            : "Please try again. If the problem persists, try again later."}
+                        </AlertDescription>
+                      </Alert>
+                    );
+                  })()}
 
                 <p className="mt-3 text-center text-[16px] text-muted-foreground">
                   <span className="font-semibold text-foreground">Pro tip:</span> The more detail

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { generateHooks, type GeneratedHook } from "@/lib/hooks.functions";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 import { cn, copyToClipboard } from "@/lib/utils";
 
 export const Route = createFileRoute("/tiktok-hook")({
@@ -275,13 +276,24 @@ function HookGeneratorPage() {
               the outcome — "freelancers who keep losing clients" beats "business tips".
             </p>
 
-            {mutation.isError && (
-              <Alert variant="destructive" className="mt-4">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Usage limit reached</AlertTitle>
-                <AlertDescription>{(mutation.error as Error).message}</AlertDescription>
-              </Alert>
-            )}
+            {mutation.isError &&
+              (() => {
+                const msg = mutation.error instanceof Error ? mutation.error.message : "";
+                const isRateLimit = isErrorCode(msg, ERROR_CODE.RATE_LIMIT);
+                return (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>
+                      {isRateLimit ? "Usage limit reached" : "Something went wrong"}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {isRateLimit
+                        ? stripErrorCode(msg)
+                        : "Please try again. If the problem persists, try again later."}
+                    </AlertDescription>
+                  </Alert>
+                );
+              })()}
 
             {hooks.length > 0 && (
               <div className="mt-8 space-y-3 border-t border-border pt-8">

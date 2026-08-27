@@ -134,7 +134,7 @@ function PostCreatorPage() {
         const isRateLimit = isErrorCode(raw, ERROR_CODE.RATE_LIMIT);
         const title = isRateLimit ? "Usage limit reached" : "Something went wrong";
         const body = isRateLimit ? stripErrorCode(raw) : "Please try again.";
-        alert(`${title}\n\n${body}`);
+        console.error("生成帖子时出错：", error, { title, body });
       } finally {
         setLoading(false);
       }

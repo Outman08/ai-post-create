@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { generateComments } from "@/lib/comments.functions";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 import { cn, copyToClipboard } from "@/lib/utils";
 import {
   Accordion,
@@ -233,15 +234,24 @@ function CommentGenerator() {
               and add one line about your angle — better input, better replies.
             </p>
 
-            {mutation.isError && (
-              <Alert variant="destructive" className="mt-4">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Usage limit reached</AlertTitle>
-                <AlertDescription>
-                  {(mutation.error as Error).message || "Something went wrong. Try again."}
-                </AlertDescription>
-              </Alert>
-            )}
+            {mutation.isError &&
+              (() => {
+                const msg = mutation.error instanceof Error ? mutation.error.message : "";
+                const isRateLimit = isErrorCode(msg, ERROR_CODE.RATE_LIMIT);
+                return (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>
+                      {isRateLimit ? "Usage limit reached" : "Something went wrong"}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {isRateLimit
+                        ? stripErrorCode(msg)
+                        : "Please try again. If the problem persists, try again later."}
+                    </AlertDescription>
+                  </Alert>
+                );
+              })()}
 
             {mutation.data && (
               <div className="mt-8 space-y-3">
