@@ -23,6 +23,7 @@ import {
   type Tone,
 } from "@/lib/post-creator.functions";
 import { copyToClipboard } from "@/lib/utils";
+import { ERROR_CODE, isErrorCode, stripErrorCode } from "@/lib/error";
 
 const TITLE = "Free AI Social Media Post Creator | GeeLark";
 const DESCRIPTION =
@@ -159,6 +160,7 @@ function PostCreatorPage() {
   useEffect(() => {
     if (!submitted) return;
     fetchPosts(submitted, platform, tone);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generateKey, fetchPosts]);
 
   async function copy(text: string, index: number) {
@@ -244,7 +246,7 @@ function PostCreatorPage() {
               <div className="mx-auto mt-14 max-w-5xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-semibold">3 drafts for {platform.name}</h2>
+                    <h2 className="text-xl font-semibold">3 drafts</h2>
                     {isTemplate ? (
                       <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
                         📋 Template
