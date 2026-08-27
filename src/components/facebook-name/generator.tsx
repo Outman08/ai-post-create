@@ -465,6 +465,7 @@ export function NameGenerator() {
             <Textarea
               id="description"
               rows={3}
+              maxLength={500}
               placeholder="A specialty coffee roaster sourcing single-origin beans and running weekend brewing workshops"
               value={input.description}
               onChange={(ev) => set("description", ev.target.value)}

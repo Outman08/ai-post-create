@@ -129,12 +129,11 @@ function PostCreatorPage() {
         setPosts(result.posts);
         setIsTemplate(result.isTemplate || false);
       } catch (error) {
-        console.error("生成帖子时出错：", error);
-        alert(
-          error instanceof Error
-            ? `Usage limit reached\n\n${error.message}`
-            : "Usage limit reached",
-        );
+        const raw = error instanceof Error ? error.message : "";
+        const isRateLimit = isErrorCode(raw, ERROR_CODE.RATE_LIMIT);
+        const title = isRateLimit ? "Usage limit reached" : "Something went wrong";
+        const body = isRateLimit ? stripErrorCode(raw) : "Please try again.";
+        alert(`${title}\n\n${body}`);
       } finally {
         setLoading(false);
       }
@@ -192,6 +191,7 @@ function PostCreatorPage() {
                     id="topic"
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
+                    maxLength={500}
                     placeholder="e.g. launching our new multi-account cloud phone plan for TikTok sellers"
                     className="min-h-32 resize-none border-0 bg-muted/60 text-[16px] focus-visible:ring-1"
                   />

@@ -147,6 +147,7 @@ function HashtagGeneratorPage() {
                     id="topic"
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
+                    maxLength={500}
                     placeholder="Tell us what your video is about, a general topic, or paste your full caption here"
                     className="min-h-48 resize-none border-0 bg-muted/60 pb-14 text-[16px] focus-visible:ring-1"
                   />

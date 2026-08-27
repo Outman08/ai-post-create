@@ -217,6 +217,7 @@ function HookGeneratorPage() {
             <textarea
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
+              maxLength={500}
               rows={4}
               placeholder="e.g. a 30-day test of posting TikToks from 10 cloud phones for a skincare brand"
               className="mt-4 w-full resize-none rounded-2xl bg-secondary px-4 py-3.5 text-sm outline-none ring-primary/40 transition placeholder:text-muted-foreground focus:ring-2"

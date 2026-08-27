@@ -101,12 +101,9 @@ function HashtagGeneratorPage() {
   }, []);
 
   function run() {
-    console.log("run 函数被调用");
     const value = topic.trim();
-    console.log("输入值:", value);
     if (!value) return;
     setCopied(null);
-    console.log("调用 mutation.mutate");
     mutation.mutate({ topic: value });
   }
 
@@ -133,6 +130,7 @@ function HashtagGeneratorPage() {
                     id="topic"
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
+                    maxLength={500}
                     placeholder="Tell us what your post is about, a general topic, or paste the full post here"
                     className="min-h-48 resize-none border-0 bg-muted/60 pb-14 text-[16px] focus-visible:ring-1"
                   />

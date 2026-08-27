@@ -147,6 +147,7 @@ function InstagramBioPage() {
                   <Textarea
                     id="description"
                     rows={4}
+                    maxLength={500}
                     placeholder="Mia Reyes — pilates coach helping busy moms with mobility and 10-minute workouts"
                     value={description}
                     onChange={(ev) => setDescription(ev.target.value)}

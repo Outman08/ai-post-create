@@ -210,6 +210,7 @@ function CommentGenerator() {
             <textarea
               value={post}
               onChange={(e) => setPost(e.target.value)}
+              maxLength={4000}
               rows={5}
               placeholder="Paste the original post here — e.g. 'Most teams don't have a content problem, they have a distribution problem. Here's what changed for us...'"
               className="mt-5 w-full resize-none rounded-2xl bg-surface p-4 text-sm outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:ring-2"

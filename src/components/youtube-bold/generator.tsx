@@ -117,6 +117,7 @@ export function BoldTextGenerator() {
           <Textarea
             id="text"
             rows={3}
+            maxLength={5000}
             placeholder="Type or paste your YouTube title, description header or channel name"
             value={text}
             onChange={(ev) => setText(ev.target.value)}

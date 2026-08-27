@@ -150,7 +150,9 @@ export function BioGenerator() {
                   key={i}
                   className="rounded-xl border border-border p-5 shadow-soft transition-shadow hover:shadow-lift"
                 >
-                  <p className="whitespace-pre-line break-words text-[15px] leading-relaxed">{bio}</p>
+                  <p className="whitespace-pre-line break-words text-[15px] leading-relaxed">
+                    {bio}
+                  </p>
                   <div className="mt-4 flex items-center justify-between">
                     <span
                       className={`text-xs ${length > 150 ? "text-destructive" : "text-muted-foreground"}`}
