@@ -113,4 +113,4 @@ export const RATE_LIMIT_INFO = {
 } as const;
 
 export const RATE_LIMIT_MESSAGE =
-  "You've reached the usage limit for this tool. Please try again later";
+  "[RATE_LIMIT] You've reached the usage limit for this tool. Please try again later";
