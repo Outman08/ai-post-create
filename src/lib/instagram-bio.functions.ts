@@ -63,7 +63,7 @@ export const generateBios = createServerFn({ method: "POST" })
   .validator((data: unknown) => Input.parse(data))
   .handler(async ({ data }) => {
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 10 次/小时）
-    const limit = await checkRateLimit("instagram-bio", { max: 10, windowSeconds: 3600 });
+    const limit = await checkRateLimit("instagram-bio", { max: 10, windowSeconds: 60 });
     if (!limit.ok) {
       throw new Error(RATE_LIMIT_MESSAGE);
     }

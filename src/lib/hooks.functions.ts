@@ -16,7 +16,7 @@ export const generateHooks = createServerFn({ method: "POST" })
   .validator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<{ hooks: GeneratedHook[] }> => {
     // 1) 限流检查（基于 Upstash Redis，按 IP 维度 5 次/分钟）
-    const limit = await checkRateLimit("tiktok-hook", { max: 5, windowSeconds: 60 });
+    const limit = await checkRateLimit("tiktok-hook", { max: 10, windowSeconds: 60 });
     if (!limit.ok) {
       throw new Error(RATE_LIMIT_MESSAGE);
     }
